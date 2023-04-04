@@ -6,8 +6,10 @@
 <link rel="stylesheet" href="assets/extensions/filepond-plugin-image-preview/filepond-plugin-image-preview.css">
 <link rel="stylesheet" href="assets/extensions/toastify-js/src/toastify.css">
 <link rel="stylesheet" href="assets/css/pages/filepond.css">
-<style>
-</style>
+
+
+<link rel="stylesheet" href="assets/extensions/datatables.net-bs5/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="assets/css/pages/datatables.css">
 @endsection
 <!-- end additional css -->
 <!-- start this page -->
@@ -23,7 +25,7 @@
                 <a href="{{ route('export_xlsx_entry') }}" id="export_entry_data" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-download"></i> xlsx</a>
                 <a href="{{route('entry_data')}}" class="btn btn btn-primary block float-start float-lg-end m-2"><i class="bi bi-file-earmark-font-fill"></i> 出品対象商品一覧</a>
                 <a href="{{route('entry_data_not')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-file-earmark-font-fill"></i> 出品不可商品一覧</a>
-                <a href="{{route('entry_setting')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-tools"></i> 設定</a>
+                <a href="{{route('entry_setting')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-pencil"></i> 作る</a>
             </div>
         </div>
     </div>
@@ -45,7 +47,7 @@
                         <tbody>
                             @if (count($exhibitions) == 0)
                             <tr>
-                                <td colspan="6" style="text-align: center;">データがありません。</td>
+                                <td colspan="6" style="text-align: center;">出品するデータはありません。</td>
                             </tr>
                             @endif
                             @foreach($exhibitions as $e)
@@ -81,8 +83,22 @@
                     </table>
                     @if (count($exhibitions)) {{ $exhibitions->onEachSide(1)->links('mypage.pagination') }} @endif
                 </div>
+                <!-- <table class="table table-bordered datatable">
+                    <thead>
+                        <tr>
+                            <th>SKU1_商品<br />管理コード</th>
+                            <th>画像</th>
+                            <th>商品名</th>
+                            <th>価格</th>
+                            <th>メルカリカテゴリー</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table> -->
+
             </div>
-        </div>
     </section>
 </div>
 @endsection
@@ -90,22 +106,14 @@
 <!-- start additional scripts -->
 @push('scripts')
 <!-- start file js -->
-<script src="assets/extensions/filepond/filepond.js"></script>
+<!-- <script src="assets/extensions/filepond/filepond.js"></script> -->
+<!-- <script src="assets/js/pages/filepond.js"></script> -->
+<script src="assets/extensions/jquery/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/v/bs5/dt-1.12.1/datatables.min.js"></script>
+<script src="assets/js/pages/datatables.js"></script>
 <script src="assets/extensions/toastify-js/src/toastify.js"></script>
-<script src="assets/js/pages/filepond.js"></script>
+
 <script>
-    $(document).ready(function() {
-        // if ($('#data').val() == "empty") {
-        //     Toastify({
-        //         text: "csv一括登録するデータが存在しません。\n展示資料をダウンロードする必要があります。 ",
-        //         duration: 2500,
-        //         close: true,
-        //         gravity: "top",
-        //         position: "right",
-        //         backgroundColor: "#4fbe87",
-        //     }).showToast();
-        // }
-    });
     document.addEventListener('DOMContentLoaded', function() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
@@ -119,7 +127,7 @@
             $("#loader-4").show(); //makes page more lightweight 
         });
         $('.progress_loader').css('display', 'block');
-        var progress_index = 4;
+        var progress_index = 1;
         const progress_func = setInterval(() => {
             if (progress_index < 100) {
                 $('#progress').val(progress_index);
@@ -128,11 +136,11 @@
                 clearInterval(progress_func);
                 progress_index = 1;
             }
-        }, 1000 * 12);
+        }, 1000 * 1);
 
         $.ajax({
-            url: "http://localhost:32768/api/v1/amazon/saveMercari",
-            //url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveMercari",
+            // url: "http://localhost:32768/api/v1/amazon/saveMercari",
+            url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveMercari",
             type: "post",
             data: {
                 user_id: '{{ Auth::id() }}',
@@ -192,6 +200,63 @@
             }
         });
     });
+
+    // $(document).ready(function() {
+    //     $('.datatable').DataTable().ajax.reload();
+    // });
+    // var mdatatable = $('.datatable').DataTable({
+    //     processing: true,
+    //     serverSide: true,
+    //     autoConfig: true,
+    //     pageLength: 10,
+    //     ajax: "{{ route('entry.list') }}",
+    //     columns: [
+    //         // {
+    //         //     data: 'DT_RowIndex',
+    //         //     name: 'DT_RowIndex',
+    //         //     render: function(data, type, row, meta) {
+    //         //         return (
+    //         //             "<button class='btn btn-default' data_id='" +
+    //         //             row.id + //id is passed to here
+    //         //             "'>" + row.id + //the name I want to pass to here.
+    //         //             "</button>"
+    //         //         );
+    //         //     },
+    //         // },
+    //         {
+    //             data: 'm_code',
+    //             name: 'm_code'
+    //         },
+    //         {
+    //             data: 'image',
+    //             name: 'image',
+    //             render: function(data) {
+    //                 url = data.split(';')[0];
+    //                 return (
+    //                     '<img src="' + url + '" alt="image" style="width: 50px; height: 50px;">'
+    //                 );
+    //             }
+    //         },
+    //         {
+    //             data: 'product',
+    //             name: 'product'
+    //         },
+    //         {
+    //             data: 'e_price',
+    //             name: 'e_price'
+    //         },
+    //         {
+    //             data: 'm_category_id',
+    //             name: 'm_category_id'
+    //         },
+    //         {
+    //             data: 'action',
+    //             name: 'action',
+    //             orderable: true,
+    //             searchable: true
+    //         },
+    //     ]
+    // });
 </script>
 <!-- end -->
 @endpush

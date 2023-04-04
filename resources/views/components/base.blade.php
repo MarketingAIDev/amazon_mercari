@@ -24,10 +24,10 @@
                 <!-- <a href="#" class="btn btn-outline-primary breadcrumb-header float-start float-lg-end"></a> -->
                 <!-- <button type="button" class="my-2 btn btn-outline-primary block float-start float-lg-end mx-3"><i class="bi bi-tools"></i>設定</button> -->
                 <button type="button" class="m-2 btn btn-danger btn-icon float-lg-end" id="amazon" onclick="allDataRemove()"><i class="bi bi-trash"></i> 削除する</button>
-                <button type="button" class="m-2 btn btn-outline-primary block float-start float-lg-end" data-bs-toggle="modal" data-bs-target="#backdrop">
+                <button type="button" class="m-2 btn btn-primary block float-start float-lg-end" data-bs-toggle="modal" data-bs-target="#backdrop">
                     <i class="bi bi-plus-circle"></i> 登録する
                 </button>
-                <div class="modal fade text-left" id="backdrop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
+                <div class="modal fade text-left amazon_mercari_modal" id="backdrop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-info">
@@ -41,10 +41,6 @@
                                 <!-- <input type="file" class="form-control csv_event" style="cursor: pointer;" placeholder="CSVファイルを選択してください。" id="csvfile" /> -->
                             </div>
                             <div class="modal-footer d-flex justify-content-center">
-                                <!-- <button type="button" class="col-12 col-lg-3 btn btn-outline-primary" data-bs-dismiss="modal" id='new_csv'>
-                                    <i class="bx bx-check d-block d-sm-none"></i>
-                                    <span class="d-none d-sm-block">登録する</span>
-                                </button> -->
                                 <button type="button" class="col-12 col-lg-3 btn btn btn-outline-primary" data-bs-dismiss="modal" id="update_csv">
                                     <i class="bx bx-check d-block d-sm-none"></i>
                                     <span class="d-none d-sm-block">登録する</span>
@@ -71,13 +67,14 @@
                                 <th>ASIN</th>
                                 <th>商品名</th>
                                 <th>価格</th>
+                                <th>Keepa URL</th>
                                 <th>詳細</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if (count($products) == 0)
                             <tr>
-                                <td colspan="5" style="text-align: center;">データがありません。</td>
+                                <td colspan="6" style="text-align: center;">データがありません。</td>
                             </tr>
                             @endif
                             @foreach($products as $p)
@@ -100,19 +97,22 @@
                                 <td>{{$p->ASIN}}</td>
                                 <td>{{ json_decode($p->product) }}</td>
                                 <td style="text-align: right;">
-                                    
+
                                     @if($p->price == 0)
-                                        取得中
+                                    取得中
                                     @else
-                                        <span data-bs-toggle="tooltip" title="登録価格" id="qqq" class="badge bg-light-secondary">¥{{number_format($p->r_price)}}</span>
-                                        @if($p->r_price < $p->price)
-                                            <br /><span data-bs-toggle="tooltip" title="現在価格" style="text-align: right;" class="badge bg-light-success"><i class="bi bi-arrow-up"></i> ¥{{number_format($p->price)}}</span>
+                                    <span data-bs-toggle="tooltip" title="登録価格" id="qqq" class="badge bg-light-secondary">¥{{number_format($p->r_price)}}</span>
+                                    @if($p->r_price < $p->price)
+                                        <br /><span data-bs-toggle="tooltip" title="現在価格" style="text-align: right;" class="badge bg-light-success"><i class="bi bi-arrow-up"></i> ¥{{number_format($p->price)}}</span>
                                         @elseif ($p->r_price == $p->price)
-                                            <br /><span data-bs-toggle="tooltip" title="現在価格" style="text-align: right;" class="badge bg-light-info">¥{{number_format($p->price)}}</span>
+                                        <br /><span data-bs-toggle="tooltip" title="現在価格" style="text-align: right;" class="badge bg-light-info">¥{{number_format($p->price)}}</span>
                                         @else
-                                            <br /><span data-bs-toggle="tooltip" title="現在価格" style="text-align: right;" class="badge bg-light-danger"><i class="bi bi-arrow-down"></i> ¥{{number_format($p->price)}}</span>
+                                        <br /><span data-bs-toggle="tooltip" title="現在価格" style="text-align: right;" class="badge bg-light-danger"><i class="bi bi-arrow-down"></i> ¥{{number_format($p->price)}}</span>
                                         @endif
-                                    @endif
+                                        @endif
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{{ 'https://keepa.com/#!product/5-' . $p->ASIN }}" target="_blank"><img style="width: 150px;" title="{{ 'https://keepa.com/#!product/5-' .$p->ASIN }}" src={{ 'https://graph.keepa.com/pricehistory.png?asin=' . $p->ASIN . '&domain=co.jp&salesrank=1' }} /></a>
                                 </td>
                                 <td>
                                     <div class="dropdown">
@@ -184,40 +184,6 @@
                 alert('選択した xlsx ファイル形式が正しくありません。');
                 xlRowObjArr = [];
             } else {
-                $('#new_csv').on('click', function() {
-                    Toastify({
-                        text: "多くのデータを保存するのに少し時間がかかることがあります。 ",
-                        duration: 3500,
-                        close: true,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "#4fbe87",
-                    }).showToast();
-
-                    $("#loader-4").fadeIn(50, function() { // fadeOut complete. Remove the loadingSpinner
-                        $("#loader-4").show(); //makes page more lightweight 
-                    });
-                    $('.progress_loader').css('display', 'block');
-
-                    var start_num = 0;
-                    //
-                    const createInterval = setInterval(() => {
-                        if (start_num < xlRowObjArr.length) {
-                            const create_func = amazon_send(xlRowObjArr.slice(start_num, (start_num + 1000)), (start_num == 0) ? 'new' : 'update', (start_num + 1000 >= xlRowObjArr.length) ? 'end' : 'start');
-                            start_num += 1000;
-                            if (create_func == 'success') {
-                                if (start_num > 0) {
-                                    var progress_len = (start_num / xlRowObjArr.length) * 100;
-                                    $('#progress').val(progress_len);
-                                }
-                            }
-                        } else {
-                            clearInterval(createInterval);
-                            start_num = 0;
-                        }
-                    }, 23000);
-                });
-                
                 $('#update_csv').on('click', function() {
                     Toastify({
                         text: "データを保存するのに少し時間が必要です。",
@@ -268,7 +234,7 @@
             return;
         }
         $.ajax({
-            url: '{{ route("remove_product") }}',
+            url: '{{ route("select_remove_product") }}',
             type: 'post',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -298,7 +264,7 @@
             return;
         }
         $.ajax({
-            url: "{{ route('remove_data') }}",
+            url: "{{ route('amazon_remove_alldata') }}",
             type: 'post',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -327,11 +293,25 @@
                 xlsxData: JSON.stringify(postData)
             },
             success: function(res) {
-                if(res != "success"){
+                if (res != "success") {
                     if (finish == 'end') {
-                        alert(update_num + "から" + xlRowObjArr.length + "番までのデータ登録に失敗しました。");
-                    }else{
-                        alert(update_num + "から" + 1000 + "番までのデータ登録に失敗しました。");
+                        Toastify({
+                            text: update_num + "から" + xlRowObjArr.length + "番までのデータ登録に失敗しました。",
+                            duration: 2000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#4fbe87",
+                        }).showToast();
+                    } else {
+                        Toastify({
+                            text: update_num + "から" + update_num + 1000 + "番までのデータ登録に失敗しました。",
+                            duration: 2000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#4fbe87",
+                        }).showToast();
                     }
                 }
                 if (finish == 'end') {
@@ -343,9 +323,9 @@
                         position: "right",
                         backgroundColor: "#4fbe87",
                     }).showToast();
-                    setTimeout(refresh_page, 4000);
+                    setTimeout(refresh_page, 3000);
                 }
-                
+
                 // let asins = [];
                 // for (const r of postData.xlRowObjArr) {
                 //     if (r.ASIN) {

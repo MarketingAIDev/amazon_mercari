@@ -16,7 +16,7 @@
     <div class="page-title">
         <div class="row">
             <div class="col-12 col-md-12 m-2 order-md-1">
-                <h3>未出品商品</h3>
+                <h3>未出品商品数 : <span style="color:red; font-family:verdana">{{$exhibition_data->count()}}個</span></h3>
                 <!-- <ul class="nav nav-tabs">
                     <li class="nav-item">
                         <a <?php if (strpos(url()->current(), "mercari_list")) echo 'class="nav-link active"';
@@ -46,7 +46,7 @@
         </div>
     </section>
 </div>
-<div class="modal fade text-left" id="mercari_setting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
+<div class="modal fade text-left amazon_mercari_modal" id="mercari_setting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header bg-info">

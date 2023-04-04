@@ -23,7 +23,8 @@
                 <!-- <h3>出品データファイルの設定</h3> -->
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{route('entry_setting')}}">基本設定</a>
+                        <a <?php if (strpos(url()->current(), "entry_setting_ng")) echo 'class="nav-link active"';
+                            else echo 'class="nav-link"'; ?> href="{{route('entry_setting')}}">基本設定</a>
                     </li>
                     <li class="nav-item">
                         <a <?php if (strpos(url()->current(), "entry_setting_category")) echo 'class="nav-link active"';
@@ -42,8 +43,10 @@
                             else echo 'class="nav-link"'; ?> href="{{route('setting_postage')}}">送料設定表</a>
                     </li> -->
                     <li class="nav-item">
-                        <a style="cursor:pointer" onclick="save_exhibition()" class="nav-link">出品</a>
+                        <a style="cursor:pointer" type="button" onclick="save_exhibition()" class="btn btn-primary"><i class="bi bi-send-check-fill"></i> 出品する</a>
                     </li>
+                    <a href="{{ route('entry_data') }}" class="btn btn-primary block float-lg-end mx-2"><i class="bi bi-reply"></i> 戻る</a>
+
                 </ul>
             </div>
         </div>
@@ -144,8 +147,8 @@
         }).showToast();
 
         $.ajax({
-            url: "http://localhost:32768/api/v1/amazon/saveExhibition",
-            //url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveExhibition",
+            // url: "http://localhost:32768/api/v1/amazon/saveExhibition",
+            url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveExhibition",
             type: "post",
             data: {
                 user_id: '{{ Auth::id() }}',

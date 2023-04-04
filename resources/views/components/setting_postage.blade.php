@@ -38,13 +38,15 @@
                         <a <?php if (strpos(url()->current(), "entry_setting_price")) echo 'class="nav-link active"';
                             else echo 'class="nav-link"'; ?> href="{{route('setting_price')}}">利益設定表</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a <?php if (strpos(url()->current(), "entry_setting_postage")) echo 'class="nav-link active"';
                             else echo 'class="nav-link"'; ?> href="{{route('setting_postage')}}">送料設定表</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
-                        <a style="cursor:pointer" onclick="save_exhibition()" class="nav-link">出品</a>
+                        <a style="cursor:pointer" type="button" onclick="save_exhibition()" class="btn btn-primary"><i class="bi bi-send-check-fill"></i> 出品する</a>
                     </li>
+                    <a href="{{ route('entry_data') }}" class="btn btn-primary block float-lg-end mx-2"><i class="bi bi-reply"></i> 戻る</a>
+
                 </ul>
             </div>
         </div>
@@ -93,7 +95,7 @@
             </div>
         </div>
     </section>
-    <div class="modal fade text-left" id="category_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
+    <div class="modal fade text-left amazon_mercari_modal" id="category_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-info">
@@ -162,7 +164,7 @@
             $("#loader-4").show(); //makes page more lightweight 
         });
         $('.progress_loader').css('display', 'block');
-        var progress_index = 2;
+        var progress_index = 1;
         const progress_func = setInterval(() => {
             if (progress_index < 100) {
                 $('#progress').val(progress_index);
@@ -171,7 +173,7 @@
                 clearInterval(progress_func);
                 progress_index = 1;
             }
-        }, 1000 * 7);
+        }, 1000 * 1);
 
         Toastify({
             text: "出品データが多い場合、\n長い時間がかかることがあります。",
@@ -201,7 +203,7 @@
                 setTimeout(() => {
                     $('#progress').val(100);
                     location.href = '{{route("entry_data")}}';
-                }, 1000 * 60 * 15);
+                }, 1000 * 100);
             },
         });
     }

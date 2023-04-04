@@ -27,4 +27,4 @@ app.listen( PORT, () =>
 // setInterval( () =>
 // {
 // amazon.updateInfo();
-// }, 1000 * 60 * 60 * 4);
+// }, 1000 * 60 * 60 * 6);

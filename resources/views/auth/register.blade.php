@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="assets/css/main/app.css">
     <link rel="stylesheet" href="assets/css/pages/auth.css">
     <link href="{{asset('avatars/1.png')}}" rel="icon">
+    <!-- <link rel="shortcut icon" href="{{asset('assets/images/amazon_affiliate.png')}}" type="image/x-icon">
+  <link rel="shortcut icon" href="{{asset('assets/images/amazon_affiliate.png')}}" type="image/png"> -->
 </head>
 
 <body>
@@ -17,9 +19,7 @@
         <div class="row h-100">
             <div class="col-lg-5 col-12">
                 <div id="auth-left" class="py-2">
-                    <div class="auth-logo mb-3">
-                    </div>
-                    <h3 style="font-size: 3rem;">サインアップ</h3>
+                    <h2 class="auth-title">サインアップ</h2>
                     <form method="POST" action="{{ route('register') }}" role="form" novalidate>
                         @csrf
                         <div class="form-group position-relative has-icon-left mb-2">
@@ -29,7 +29,7 @@
                             </div>
                         </div>
                         <div class="form-group position-relative has-icon-left mb-2">
-                            <input type="email" name="email" id="email" class="form-control form-control-xl" placeholder="メールアドレス" required>
+                            <input type="email" name="email" class="form-control form-control-xl" placeholder="メールアドレス" required>
                             <div class="form-control-icon">
                                 <i class="bi bi-envelope"></i>
 
@@ -57,12 +57,11 @@
             </div>
             <div class="col-lg-7 d-none d-lg-block">
                 <div id="auth-right">
-                    
+                    <!-- <img src="{{asset('avatars/login.png')}}" alt=""> -->
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 
 </html>

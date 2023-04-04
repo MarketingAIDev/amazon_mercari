@@ -36,7 +36,7 @@ Route::group(['middleware' => ['auth']], function () {
     //etc_function
     Route::get('etc_function', [ProductController::class, 'etc_function'])->name('etc_function');
 
-    Route::view('users_admin_page', 'mypage.users_admin_page')->name('users_admin_page');
+    Route::view('admin_page', 'mypage.admin_page')->name('admin_page');
     Route::get('delete_account', [MypageController::class, 'delete_account'])->name('delete_account');
     Route::get('permit_account', [MypageController::class, 'permit_account'])->name('permit_account');
     //import data
@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::view('index', 'components.base')->name('index');
     Route::post('update_base_product', [DataController::class, 'update_base_product'])->name("update_base_product");
     //entry
+    Route::get('entry.list', [DataController::class, 'entry_list'])->name('entry.list');
     Route::get('entry_data', [DataController::class, 'entry_data'])->name('entry_data');
     Route::get('entry_data_not', [DataController::class, 'entry_data_not'])->name('entry_data_not');
     Route::get('entry_setting_ng', [DataController::class, 'entry_setting'])->name('entry_setting');
@@ -64,7 +65,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('create_category_id', [MypageController::class, 'create_category_id'])->name('create_category_id');
     //csv
     Route::post('remove_product', [ProductController::class, 'remove_product'])->name('remove_product');
-    Route::post('remove_data', [MypageController::class, 'remove_data'])->name('remove_data');
+    Route::post('amazon_remove_alldata', [MypageController::class, 'amazon_remove_alldata'])->name('amazon_remove_alldata');
+    Route::post('select_remove_product', [MypageController::class, 'select_remove_product'])->name('select_remove_product');
     Route::post('all_category_remove', [MypageController::class, 'all_category_remove'])->name('all_category_remove');
     Route::post('all_category_id_remove', [MypageController::class, 'all_category_id_remove'])->name('all_category_id_remove');
     Route::post('price_remove', [MypageController::class, 'price_remove'])->name("price_remove");

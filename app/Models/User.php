@@ -34,8 +34,6 @@ class User extends Authenticatable
         'secretkey',
         'partnertag',
         'access_token',
-        'plan_id',
-        'registered_time',
     ];
 
     /**

@@ -19,8 +19,9 @@
     #category_model,
     #backdrop_2,
     #mercari_setting,
-    #region_origin {
-      background: rgb(13 17 70 / 17%);
+    #region_origin,
+    .amazon_mercari_modal {
+      background: rgb(13 17 70 / 37%);
     }
 
     .hidden {
@@ -47,7 +48,7 @@
     <div id="loader">さ</div>
     <div id="loader">い</div>
     <div id="loader">。</div>
-    <div id="loader" class="progress_loader" style="top: 50%;left: 24%;font-size: 1.5rem;display: none;">
+    <div id="loader" class="progress_loader" style="top: 50%;left: 16%;font-size: 1.5rem;display: none;">
       <!-- <label for="file">Downloading progress:</label> -->
       <progress id="progress" value="0" max="100"> </progress>
     </div>
@@ -101,13 +102,6 @@
                 <span>出品データの管理</span>
               </a>
             </li>
-            <li <?php if (strpos(url()->current(), "mercari_update")) echo 'class="sidebar-item active"';
-                else echo 'class="sidebar-item"'; ?>>
-              <a href="{{route('mercari_update')}}" class='sidebar-link'>
-                <i class="bi bi-download"></i>
-                <span>出品中の商品リスト</span>
-              </a>
-            </li>
             <li <?php if (strpos(url()->current(), "mercari_list")) echo 'class="sidebar-item active"';
                 else echo 'class="sidebar-item"'; ?>>
               <a href="{{route('mercari_list')}}" class='sidebar-link'>
@@ -115,13 +109,29 @@
                 <span>未出品商品リスト</span>
               </a>
             </li>
+            <li <?php if (strpos(url()->current(), "mercari_update")) echo 'class="sidebar-item active"';
+                else echo 'class="sidebar-item"'; ?>>
+              <a href="{{route('mercari_update')}}" class='sidebar-link'>
+                <i class="bi bi-download"></i>
+                <span>出品中の商品リスト</span>
+              </a>
+            </li>
             <li <?php if (strpos(url()->current(), "etc")) echo 'class="sidebar-item active"';
                 else echo 'class="sidebar-item"'; ?>>
               <a href="{{route('etc_function')}}" class='sidebar-link'>
-                <i class="bi bi-download"></i>
+                <i class="bi bi-bezier"></i>
                 <span>在庫切れ商品リスト</span>
               </a>
             </li>
+            @if ( Auth::user()->role == 'admin')
+            <li <?php if (strpos(url()->current(), "admin")) echo 'class="sidebar-item active"';
+                else echo 'class="sidebar-item"'; ?>>
+              <a href="{{route('admin_page')}}" class='sidebar-link'>
+                <i class="bi bi-person-circle"></i>
+                <span>管理者ページ</span>
+              </a>
+            </li>
+            @endif
             <li <?php if (strpos(url()->current(), "users")) echo 'class="sidebar-item active has-sub"';
                 else echo 'class="sidebar-item has-sub"'; ?>>
               <a href="" class='sidebar-link'>
@@ -129,14 +139,6 @@
                 <span>{{Auth::user()->family_name}}</span>
               </a>
               <ul class="submenu ">
-                @if ( Auth::user()->role == 'admin')
-                <li class="submenu-item ">
-                  <a href="{{route('users_admin_page')}}" class='sidebar-link'>
-                    <i class="bi bi-person-circle"></i>
-                    <span>管理者ページ</span>
-                  </a>
-                </li>
-                @endif
                 <li class="submenu-item ">
                   <a href="{{route('users_profile')}}" class='sidebar-link'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-gear" viewBox="0 0 16 16">

@@ -21,6 +21,7 @@ use App\Exports\ExportMercariProduct;
 use App\Exports\ExportMercariUpdate;
 use App\Imports\AmazomProductImport;
 use App\Imports\UpdateMercari;
+use DataTables;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,8 @@ class DataController extends Controller
 		$downloadImgName = 'MERCARI' . $start . '-' . $end . '.zip';
 		if (!File::exists($path)) {
 			$mercari_products = MercariProduct::where('user_id', Auth::user()->id)->paginate(10);
-			return view('components.mercari_register', ['mercari_products' => $mercari_products, 'error' => 'no']);
+			return redirect()->route('mercari_list');
+			// return view('components.mercari_register', ['mercari_products' => $mercari_products, 'error' => 'no']);
 		}
 		if ($zip->open(public_path($downloadImgName), ZipArchive::CREATE) === true) {
 			$files = File::files(public_path(Auth::user()->family_name . "(" . $start . '-' . $end . ")/"));
@@ -66,12 +68,13 @@ class DataController extends Controller
 
 	public function mercari_update()
 	{
-		$mercari_updates = MercariUpdate::select('id')->where('user_id', '=', Auth::id())->orderBy('id', 'asc')->get();
+		$mercari_updates = MercariUpdate::select('id')->where('user_id', '=', Auth::id())->where('product_status', '!=', 3)->orderBy('id', 'asc')->get();
 		return view('components.mercari_update', ['mercari_updates' => $mercari_updates]);
 	}
 
-	public function mercari_update_allremove() {
-		MercariUpdate::where('user_id',Auth::id())->delete();
+	public function mercari_update_allremove()
+	{
+		MercariUpdate::where('user_id', Auth::id())->delete();
 		return redirect()->route('mercari_update');
 	}
 	public function update_mercari_import(Request $request)
@@ -566,11 +569,19 @@ class DataController extends Controller
 			]);
 		}
 		$export_csv = new ExportMercariUpdate($mercari_update_product);
-		return Excel::download($export_csv, $filename, \Maatwebsite\Excel\Excel::CSV);
+		return Excel::download($export_csv, $filename, \Maatwebsite\Excel\Excel::CSV, [
+			'Content-Type' => 'text/csv',
+		]);
 	}
 
-	public function mercari_update_delete(Request $request, $from, $to, $start, $end){
-		MercariUpdate::whereBetween('id', [$from, $to])->delete();
+	public function mercari_update_delete(Request $request, $from, $to, $start, $end)
+	{
+		// MercariUpdate::whereBetween('id', [$from, $to])->delete();
+		$mercari_delete = MercariUpdate::where('id', [$from, $to])->get();
+		foreach ($mercari_delete as $md) {
+			$md->product_status = 3;
+			$md->save();
+		}
 		return redirect()->route('mercari_update');
 	}
 
@@ -651,5 +662,30 @@ class DataController extends Controller
 		}
 		return 'success';
 	}
-	
+	public function entry_list(Request $request)
+	{
+		// if ($request->ajax()) {
+		// 	$data = Exhibition::latest()->get();
+		// 	return Datatables::of($data)
+		// 		->addIndexColumn()
+		// 		->addColumn('action', function ($row) {
+		// 			$actionBtn = '<a href="javascript:void(0)" class="edit btn btn-success btn-sm">Edit</a> <a href="javascript:void(0)" class="delete btn btn-danger btn-sm">Delete</a>';
+		// 			return $actionBtn;
+		// 		})
+		// 		->rawColumns(['action'])
+		// 		->make(true);
+		// }
+		if ($request->ajax()) {
+			$data = Exhibition::select('m_code', 'image',  'product', 'e_price', 'm_category_id')->where('exclusion', '')->get();
+			return Datatables::of($data)->addIndexColumn()
+				->addColumn('action', function ($row) {
+					$btn = '<a href="javascript:void(0)" class="btn btn-primary btn-sm">View</a>';
+					return $btn;
+				})
+				->rawColumns(['action'])
+				->make(true);
+		}
+
+		return view('users');
+	}
 }

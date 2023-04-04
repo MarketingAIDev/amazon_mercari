@@ -4,6 +4,9 @@ module.exports = ( sequelize, Sequelize ) =>
     user_id: {
       type: Sequelize.INTEGER
     },
+    flag: {
+      type: Sequelize.INTEGER
+    },
     inventory: {
       type: Sequelize.INTEGER
     },

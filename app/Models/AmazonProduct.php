@@ -32,6 +32,7 @@ class AmazonProduct extends Model
         'p_length',
         'p_width',
         'p_height',
-        'm_code'
+        'm_code',
+        'flag',
     ];
 }

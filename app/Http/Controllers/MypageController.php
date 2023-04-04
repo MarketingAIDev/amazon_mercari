@@ -32,15 +32,31 @@ class MypageController extends Controller
 	{
 		return view('mypage.index');
 	}
-//Checking check
-	public function remove_data()
+
+	public function amazon_remove_alldata()
 	{
 		// AmazonProduct::where('user_id', Auth::id())->delete();
-		$user = Auth::user();		
-		// $xlsxAmazon = AmazonProduct::where('user_id', $user->id)->get();
 		// $xlsxAmazon->each->flag = 0; 
 		// $xlsxAmazon->save();
-		DB::raw("UPDATE amazon_products SET flag = 0 WHERE user_id = '".$user->id."'");
+		// DB::raw("UPDATE amazon_products SET flag = 0 WHERE user_id = '" . $user->id . "'");
+		$xlsxAmazon = AmazonProduct::where('user_id', Auth::id())->get();
+		foreach ($xlsxAmazon as $rm) {
+			$rm->flag = 0;
+			$rm->save();
+		}
+		return 'success';
+	}
+	public function select_remove_product(Request $request)
+	{
+		// AmazonProduct::where('user_id', Auth::id())->delete();
+		// $xlsxAmazon->each->flag = 0; 
+		// $xlsxAmazon->save();
+		// DB::raw("UPDATE amazon_products SET flag = 0 WHERE user_id = '" . $user->id . "'");
+		$xlsxAmazon = AmazonProduct::where('id', $request['product_id'])->first();
+		// foreach ($xlsxAmazon as $rm) {
+		$xlsxAmazon->flag = 0;
+		$xlsxAmazon->save();
+		// }
 		return 'success';
 	}
 
@@ -396,20 +412,17 @@ class MypageController extends Controller
 				$xlsxAmazon->p_length = $xlsxAmazonArr[$i]['Package: Length (cm)'] ?? '';
 				$xlsxAmazon->p_width = $xlsxAmazonArr[$i]['Package: Width (cm)'] ?? '';
 				$xlsxAmazon->p_height = $xlsxAmazonArr[$i]['Package: Height (cm)'] ?? '';
-				$xlsxAmazon->flag = 1; 
+				$xlsxAmazon->flag = 1;
 				$xlsxAmazon->save();
 				$xlsxAmazon->m_code = 'MC' . substr('0000000000', (floor(log(($xlsxAmazon->id), 10)) + 1)) . ($xlsxAmazon->id);
 				$xlsxAmazon->save();
 			}
 			DB::commit();
-
-			return "success";
 		} catch (\Exception $e) {
 			DB::rollback();
-
 			return "failed";
 		}
-		
+		return "success";
 	}
 	public function create_matching_categories(Request $request)
 	{

@@ -45,14 +45,14 @@
                     <table class="table table-striped mb-0" style="text-align: center;">
                         <tbody id="mercari_update_list">
                         </tbody>
-                        
+
                     </table>
                 </div>
             </div>
         </div>
     </section>
 </div>
-<div class="modal fade text-left" id="mercari_import_csv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
+<div class="modal fade text-left amazon_mercari_modal" id="mercari_import_csv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form action="{{ route('update_mercari_import') }}" method="POST" enctype="multipart/form-data">
@@ -122,26 +122,6 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     }, false);
-    function mercari_update_allremove() {
-        if (!window.confirm('データを本当に削除しますか？')) {
-            return;
-        }
-        $.ajax({
-            url: "{{ route('remove_data') }}",
-            type: 'post',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {},
-            success: function(res) {
-                if (res === 'success') {
-                    location.href = window.location.href;
-                }
-            }
-        });
-    }
-    
-
 </script>
 <!-- end -->
 @endpush

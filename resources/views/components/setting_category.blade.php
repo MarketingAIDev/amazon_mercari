@@ -42,8 +42,10 @@
                             else echo 'class="nav-link"'; ?> href="{{route('setting_postage')}}">送料設定表</a>
                     </li> -->
                     <li class="nav-item">
-                        <a style="cursor:pointer" onclick="save_exhibition()" class="nav-link">出品</a>
+                        <a style="cursor:pointer" type="button" onclick="save_exhibition()" class="btn btn-primary"><i class="bi bi-send-check-fill"></i> 出品する</a>
                     </li>
+                    <a href="{{ route('entry_data') }}" class="btn btn-primary block float-lg-end mx-2"><i class="bi bi-reply"></i> 戻る</a>
+
                 </ul>
             </div>
         </div>
@@ -94,7 +96,7 @@
             </div>
         </div>
     </section>
-    <div class="modal fade text-left" id="category_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
+    <div class="modal fade text-left amazon_mercari_modal" id="category_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel4" data-bs-backdrop="false" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-info">

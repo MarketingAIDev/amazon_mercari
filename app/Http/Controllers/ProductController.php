@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\AmazonProduct;
-use App\Models\Machine;
+use App\Models\MercariProduct;
 use App\Models\MercariUpdate;
 
 class ProductController extends Controller
@@ -39,14 +39,14 @@ class ProductController extends Controller
 		$products = AmazonProduct::where('user_id', $user->id)->orderBy('id', 'desc')->paginate(10);
 		return view('mypage.product_list', ['user' => $user, 'products' => $products]);
 	}
-//Checking Del
+	//Checking Del
 	public function delete_product()
 	{
 		$user = Auth::user();
 		// $products = AmazonProduct::where('user_id', $user->id);
 		// $products->delete();
 		$xlsxAmazon = AmazonProduct::where('user_id', $user->id)->get();
-		$xlsxAmazon->flag = 0; 
+		$xlsxAmazon->flag = 0;
 		$xlsxAmazon->save();
 		return;
 	}
@@ -55,15 +55,9 @@ class ProductController extends Controller
 	{
 		//$products = AmazonProduct::where('id', $request->product_id)->delete();
 		$xlsxAmazon = AmazonProduct::where('id', $request->product_id)->first();
-		$xlsxAmazon->flag = 0; 
+		$xlsxAmazon->flag = 0;
 		$xlsxAmazon->save();
 		return true;
-	}
-
-	public function scan(Request $request)
-	{
-		$machine = Machine::find($request->id);
-		return $machine;
 	}
 
 	public function csv_down(Request $request)
@@ -86,22 +80,6 @@ class ProductController extends Controller
 		exit();
 	}
 
-	public function stop(Request $request)
-	{
-		$machine = Machine::find($request->id);
-		$machine->round = 0;
-		$machine->trk_num = 0;
-		$machine->stop = 1;
-		$machine->save();
-	}
-
-	public function restart(Request $request)
-	{
-		$machine = Machine::find($request->id);
-		$machine->stop = 0;
-		$machine->save();
-	}
-
 	public function edit_track(Request $request)
 	{
 		$product = AmazonProduct::find($request->id);
@@ -109,8 +87,9 @@ class ProductController extends Controller
 		$product->save();
 	}
 
-	// public function etc_function()
-	// {
-	// 	MercariUpdate::where('user_id',Auth::id())->where('')
-	// }
+	public function etc_function()
+	{
+		$mercari_updates_limit = MercariUpdate::select('id', 'SKU1_product_management_code', 'last_modified', 'product_name', 'Selling_price', 'product_status')->where('user_id', '=', Auth::id())->where('SKU1_current_inventory', 0)->orderBy('id', 'asc')->get();
+		return view('components.etc_function', ['mercari_updates_limit' => $mercari_updates_limit]);
+	}
 }
