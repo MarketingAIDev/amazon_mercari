@@ -1,0 +1,35 @@
+https://mercari-shops.com/signin/seller/owner
+bigvalley2000@gmail.com
+aoyama2929
+713754
+
+https://secure.xserver.ne.jp/
+ID:	masaki@north-ad-research.com
+PW:	Uqha3ucU
+
+++++++++++++++++ server +++++++++++++++++
+
+domain:		xs021277.xsrv.jp
+server_no: 	sv14560
+host: 		sv14560.xserver.jp
+IP: 		162.43.122.161
+root: 		/home/xs021277
+
+++++++++++++++++ DB +++++++++++++++++
+
+DB: 	xs021277_db
+user: 	xs021277_admin
+pwd: 	admin123
+https://phpmyadmin-sv14560.xserver.jp/
+
+pm2 delete all
+pm2 start server.js
+killall node
+
+
+https://docs.google.com/document/d/1e0l2C5Wz62IJc-x9wf3jNh9_j6SlZxvMyFswF3LlotY/edit
+https://miya-system-works.com/blog/detail/server-xserver-laravel/
+
+
+moonrider.dev10@gmail.com
+asdfASDF!@#$1234
