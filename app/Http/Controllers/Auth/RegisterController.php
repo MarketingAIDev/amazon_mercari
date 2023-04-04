@@ -104,8 +104,7 @@ class RegisterController extends Controller
         $setting->mark = 1;
         $setting->save();
 
-
-        return redirect()->route('welcome');
+        return redirect()->route('show_plan');
     }
 
     protected function create(array $data)

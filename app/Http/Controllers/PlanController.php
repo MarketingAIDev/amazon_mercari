@@ -16,12 +16,18 @@ class PlanController extends Controller
 		$plans = Plan::all();
 		return view('plan.index', ['plans' => $plans]);
 	}
-
+	
 	public function select(Request $request)
 	{
 		$user = User::find(Auth::id());
 		$user->plan_id = $request->id;
 		$user->save();
-		return redirect()->route('login');  
+		return redirect()->route('plan_page');  
+	}
+
+	public function page()
+	{
+		$plans = Plan::all();
+		return view('plan.show', ['plans' => $plans]);
 	}
 }

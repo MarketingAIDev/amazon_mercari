@@ -25,6 +25,7 @@ Route::prefix('plan')->group(function ()
 {
     Route::get('select', [PlanController::class, 'show'])->name('show_plan');
     Route::get('select/{id}', [PlanController::class, 'select'])->name('select_plan');
+    Route::get('show', [PlanController::class, 'page'])->name('plan_page');
 });
 
 // Main Routes

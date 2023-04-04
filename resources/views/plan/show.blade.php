@@ -52,18 +52,42 @@
                                     @foreach($plans as $p)
                                     <div class="col-lg-3 col-md-6 mt-4 px-0 position-relative z-1" id="{{ $p->id }}">
                                         <div class="card">
-                                            <div class="card-header text-center bg-secondary">
-                                                <h1 class="card-title text-white" style="font-size: 24px !important;">{{ $p->name }}</h1>
-                                            </div>
-                                            <div class="text-center m-2">
-                                                <h5 class="price">円 {{ number_format($p->price) }} / 月</h5>
-                                            </div>
-                                            <ul>
-                                                <li><i class="bi bi-check-circle"></i>{{ $p->limit }}商品まで登録</li>
-                                            </ul>
-                                            <div class="card-footer">
-                                                <button class="btn btn-primary btn-block" onclick="pay({{ $p->id }}, {{ $p->price }})">選択</button>
-                                            </div>
+                                            @if(Auth::user()->plan_id == $p->id)
+                                                <div class="card-header text-center bg-primary">
+                                                    <h1 class="card-title text-white" style="font-size: 24px !important;">{{ $p->name }}</h1>
+                                                </div>
+                                                <div class="text-center m-2">
+                                                    <h5 class="price">円 {{ number_format($p->price) }} / 月</h5>
+                                                </div>
+                                                <ul>
+                                                    <li><i class="bi bi-check-circle"></i>{{ $p->limit }}商品まで登録</li>
+                                                    <li>
+                                                        <i class="bi bi-check-circle"></i>
+                                                        <?php
+                                                            $date = new DateTime(Auth::user()->registered_time); // Y-m-d
+                                                            $date->add(new DateInterval('P30D'));
+                                                            echo $date->format('Y-m-d') . "\n";
+                                                        ?>
+                                                        まで
+                                                    </li>
+                                                </ul>
+                                                <div class="card-footer">
+                                                    <button class="btn btn-primary btn-block disabled">選択済み</button>
+                                                </div>
+                                            @else
+                                                <div class="card-header text-center bg-secondary">
+                                                    <h1 class="card-title text-white" style="font-size: 24px !important;">{{ $p->name }}</h1>
+                                                </div>
+                                                <div class="text-center m-2">
+                                                    <h5 class="price">円 {{ number_format($p->price) }} / 月</h5>
+                                                </div>
+                                                <ul>
+                                                    <li><i class="bi bi-check-circle"></i>{{ $p->limit }}商品まで登録</li>
+                                                </ul>
+                                                <div class="card-footer">
+                                                    <button class="btn btn-primary btn-block" onclick="update({{ $p->id }}, {{ $p->price }})">選択</button>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                     @endforeach
@@ -99,7 +123,7 @@
         };
         
         // Stripe-Pay
-        const pay = (id, price) => {
+        const update = (id, price) => {
             if (!window.confirm('本当にお支払いを開始しますか？')) {
                 return window.location.href = '{{ route("register") }}';
             }
@@ -177,7 +201,7 @@
                 mode: 'payment',
                 allow_promotion_codes: false,
                 billing_address_collection: "required",
-                success_url: '{{ url("plan/select/") }}/' + planId,
+                success_url: '{{ url("plan/select") }}/' + planId,
                 cancel_url: '{{ route("register") }}',
             }
             $.ajax({
