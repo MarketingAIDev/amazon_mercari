@@ -18,6 +18,9 @@ module.exports = (sequelize, Sequelize) => {
     partnertag: {
       type: Sequelize.STRING
     },
+    plan_id: {
+      type: Sequelize.INTEGER
+    },
     accesskey: {
       type: Sequelize.STRING
     },
@@ -28,8 +31,8 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER
     },
   },
-  { 
-    timestamps: false
-  });
+    {
+      timestamps: false
+    });
   return userList;
 };

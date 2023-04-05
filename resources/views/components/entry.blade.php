@@ -1,17 +1,17 @@
 <!-- extend sidebar -->
 @extends("layouts.sidebar")
+
 <!-- start additional css  -->
 @section('additional_CSS')
 <link rel="stylesheet" href="assets/extensions/filepond/filepond.css">
 <link rel="stylesheet" href="assets/extensions/filepond-plugin-image-preview/filepond-plugin-image-preview.css">
 <link rel="stylesheet" href="assets/extensions/toastify-js/src/toastify.css">
 <link rel="stylesheet" href="assets/css/pages/filepond.css">
-
-
 <link rel="stylesheet" href="assets/extensions/datatables.net-bs5/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="assets/css/pages/datatables.css">
 @endsection
 <!-- end additional css -->
+
 <!-- start this page -->
 @section('content')
 <div class="page-heading">
@@ -25,14 +25,14 @@
                 <a href="{{ route('export_xlsx_entry') }}" id="export_entry_data" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-download"></i> xlsx</a>
                 <a href="{{route('entry_data')}}" class="btn btn btn-primary block float-start float-lg-end m-2"><i class="bi bi-file-earmark-font-fill"></i> 出品対象商品一覧</a>
                 <a href="{{route('entry_data_not')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-file-earmark-font-fill"></i> 出品不可商品一覧</a>
-                <a href="{{route('entry_setting')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-pencil"></i> 作る</a>
+                <a href="{{route('entry_setting')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-pencil"></i>出品設定</a>
             </div>
         </div>
     </div>
     <section class="section">
         <div class="card">
             <div class="card-body">
-                <div class="table-responsive">
+                <!-- <div class="table-responsive">
                     <table class="table table-striped mb-0">
                         <thead>
                             <tr>
@@ -82,8 +82,8 @@
                         </tbody>
                     </table>
                     @if (count($exhibitions)) {{ $exhibitions->onEachSide(1)->links('mypage.pagination') }} @endif
-                </div>
-                <!-- <table class="table table-bordered datatable">
+                </div> -->
+                <table class="table table-bordered datatable">
                     <thead>
                         <tr>
                             <th>SKU1_商品<br />管理コード</th>
@@ -91,26 +91,24 @@
                             <th>商品名</th>
                             <th>価格</th>
                             <th>メルカリカテゴリー</th>
-                            <th>Action</th>
+                            <th>Keepa URL</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
-                </table> -->
-
+                </table>
             </div>
+        </div>
     </section>
 </div>
 @endsection
 <!-- end this page -->
+
 <!-- start additional scripts -->
 @push('scripts')
-<!-- start file js -->
-<!-- <script src="assets/extensions/filepond/filepond.js"></script> -->
-<!-- <script src="assets/js/pages/filepond.js"></script> -->
 <script src="assets/extensions/jquery/jquery.min.js"></script>
-<script src="https://cdn.datatables.net/v/bs5/dt-1.12.1/datatables.min.js"></script>
-<script src="assets/js/pages/datatables.js"></script>
+<script src="assets/js/pages/datatables.min.js"></script>
 <script src="assets/extensions/toastify-js/src/toastify.js"></script>
 
 <script>
@@ -118,15 +116,15 @@
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+        });
     }, false);
-    // $('#export_entry_data').on('click', function() {
-    // });
+
     $('#save_mercari_data').on('click', function() {
         $("#loader-4").fadeIn(50, function() { // fadeOut complete. Remove the loadingSpinner
             $("#loader-4").show(); //makes page more lightweight 
         });
         $('.progress_loader').css('display', 'block');
+
         var progress_index = 1;
         const progress_func = setInterval(() => {
             if (progress_index < 100) {
@@ -162,20 +160,6 @@
                     }).showToast();
                 }
             },
-            // error: function() {
-            //     Toastify({
-            //         text: "データの保存中に エラーが発生しました。\n ",
-            //         duration: 2500,
-            //         close: true,
-            //         gravity: "top",
-            //         position: "right",
-            //         backgroundColor: "#4fbe87",
-            //     }).showToast();
-            //     setTimeout(() => {
-            //         $('#progress').val(100);
-            //         location.href = '{{ route("entry_data") }}';
-            //     }, 1000 * 3);
-            // }
         });
         $.ajax({
             // url: "http://localhost:32768/api/v1/amazon/downloadImages",
@@ -201,62 +185,74 @@
         });
     });
 
-    // $(document).ready(function() {
-    //     $('.datatable').DataTable().ajax.reload();
-    // });
-    // var mdatatable = $('.datatable').DataTable({
-    //     processing: true,
-    //     serverSide: true,
-    //     autoConfig: true,
-    //     pageLength: 10,
-    //     ajax: "{{ route('entry.list') }}",
-    //     columns: [
-    //         // {
-    //         //     data: 'DT_RowIndex',
-    //         //     name: 'DT_RowIndex',
-    //         //     render: function(data, type, row, meta) {
-    //         //         return (
-    //         //             "<button class='btn btn-default' data_id='" +
-    //         //             row.id + //id is passed to here
-    //         //             "'>" + row.id + //the name I want to pass to here.
-    //         //             "</button>"
-    //         //         );
-    //         //     },
-    //         // },
-    //         {
-    //             data: 'm_code',
-    //             name: 'm_code'
-    //         },
-    //         {
-    //             data: 'image',
-    //             name: 'image',
-    //             render: function(data) {
-    //                 url = data.split(';')[0];
-    //                 return (
-    //                     '<img src="' + url + '" alt="image" style="width: 50px; height: 50px;">'
-    //                 );
-    //             }
-    //         },
-    //         {
-    //             data: 'product',
-    //             name: 'product'
-    //         },
-    //         {
-    //             data: 'e_price',
-    //             name: 'e_price'
-    //         },
-    //         {
-    //             data: 'm_category_id',
-    //             name: 'm_category_id'
-    //         },
-    //         {
-    //             data: 'action',
-    //             name: 'action',
-    //             orderable: true,
-    //             searchable: true
-    //         },
-    //     ]
-    // });
+    $(document).ready(function() {
+        $('.datatable').DataTable().ajax.reload();
+    });
+
+    var datatable = $('.datatable').DataTable({
+        columnDefs: [
+            {
+                targets: 3,
+                className: 'dt-body-right'
+            }
+        ],
+        processing: true,
+        serverSide: true,
+        autoConfig: true,
+        pageLength: 10,
+        ajax: "{{ route('entry.list') }}",
+        columns: [
+            {
+                data: 'm_code',
+                name: 'm_code'
+            },
+            {
+                data: 'image',
+                name: 'image',
+                render: function(data) {
+                    url = data.split(';')[0];
+                    return (
+                        '<img src="' + url + '" alt="image" style="width: 50px; height: 50px;">'
+                    );
+                }
+            },
+            {
+                data: 'product',
+                name: 'product'
+            },
+            {
+                data: null,
+                name: 'e_price',
+                render: function(data, type, row) {
+                    return (
+                        '<span data-bs-toggle="tooltip" title="出品価格" class="badge bg-light-success">¥' + row['e_price'] + '</span>' +
+                        '<br/><span data-bs-toggle="tooltip" title="アマゾン価格" class="badge bg-light-secondary">¥' + row['price'] + '</span>' +
+                        '<br/><span data-bs-toggle="tooltip" title="送料" class="badge bg-light-secondary">¥' + row['postage'] + '</span>' +
+                        '<br/><span data-bs-toggle="tooltip" title="その他費用" class="badge bg-light-secondary">¥' + row['etc'] + '</span>'
+                    );
+                }
+            },
+            {
+                data: 'm_category_id',
+                name: 'm_category_id'
+            },
+            {
+                data: 'ASIN',
+                name: 'keepaURL',
+                render: function (data) {
+                    return (
+                        `<a href="https://keepa.com/#!product/5-` + data + `" target="_blank"><img style="width: 150px;" title="https://keepa.com/#!product/5-` + data + `" src="https://graph.keepa.com/pricehistory.png?asin=` + data +  `&domain=co.jp&salesrank=1" /></a>`
+                    )
+                }
+            },
+            {
+                data: 'action',
+                name: 'action',
+                orderable: false,
+                searchable: false,
+            },
+        ]
+    });
 </script>
 <!-- end -->
 @endpush

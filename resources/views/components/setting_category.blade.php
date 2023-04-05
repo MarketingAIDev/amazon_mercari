@@ -42,9 +42,11 @@
                             else echo 'class="nav-link"'; ?> href="{{route('setting_postage')}}">送料設定表</a>
                     </li> -->
                     <li class="nav-item">
-                        <a style="cursor:pointer" type="button" onclick="save_exhibition()" class="btn btn-primary"><i class="bi bi-send-check-fill"></i> 出品する</a>
+                        <a <?php if (strpos(url()->current(), "entry_data")) echo 'class="nav-link active"';
+                            else echo 'class="nav-link"'; ?> href="{{route('entry_data')}}">出品リスト</a>
                     </li>
-                    <a href="{{ route('entry_data') }}" class="btn btn-primary block float-lg-end mx-2"><i class="bi bi-reply"></i> 戻る</a>
+
+                    <a style="cursor:pointer" type="button" onclick="save_exhibition()" class="btn btn-primary"><i class="bi bi-send-check-fill"></i> 出品する</a>
 
                 </ul>
             </div>
@@ -170,7 +172,7 @@
             $("#loader-4").show(); //makes page more lightweight 
         });
         $('.progress_loader').css('display', 'block');
-        var progress_index = 2;
+        var progress_index = 1;
         const progress_func = setInterval(() => {
             if (progress_index < 100) {
                 $('#progress').val(progress_index);
@@ -179,7 +181,7 @@
                 clearInterval(progress_func);
                 progress_index = 1;
             }
-        }, 1000 * 7);
+        }, 1000 * 1.2);
 
         Toastify({
             text: "出品データが多い場合、\n長い時間がかかることがあります。",
@@ -189,6 +191,7 @@
             position: "right",
             backgroundColor: "#4fbe87",
         }).showToast();
+
         $.ajax({
             // url: "http://localhost:32768/api/v1/amazon/saveExhibition",
             url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveExhibition",
@@ -209,7 +212,7 @@
                 setTimeout(() => {
                     $('#progress').val(100);
                     location.href = '{{route("entry_data")}}';
-                }, 1000 * 60 * 15);
+                }, 1000 * 120);
             },
         });
     }

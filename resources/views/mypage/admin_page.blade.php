@@ -42,7 +42,7 @@ $users = App\Models\User::all();
 											<td rowspan="1" colspan="1">{{ $u->email }}</td>
 											<td rowspan="1" colspan="1">
 												<div class="form-check form-switch" style="margin-top: 10px;">
-													<input type="checkbox" class="form-check-input" id={{"customSwitch".$u->id}} @if ($u->is_permitted) checked @endif onchange="permitAccount(event);">
+													<input type="checkbox" class="form-check-input" id={{"customSwitch".$u->id}} @if ($u->is_permitted == 1) checked @endif onchange="permitAccount(event);">
 													<label class="custom-control-label" for={{"customSwitch".$u->id}}></label>
 												</div>
 											</td>

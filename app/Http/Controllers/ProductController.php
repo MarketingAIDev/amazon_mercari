@@ -89,7 +89,21 @@ class ProductController extends Controller
 
 	public function etc_function()
 	{
-		$mercari_updates_limit = MercariUpdate::select('id', 'SKU1_product_management_code', 'last_modified', 'product_name', 'Selling_price', 'product_status')->where('user_id', '=', Auth::id())->where('SKU1_current_inventory', 0)->orderBy('id', 'asc')->get();
+		// $mercari_updates_limit = MercariUpdate::select('id', 'SKU1_product_management_code', 'last_modified', 'product_name', 'Selling_price', 'product_status')->where('user_id', '=', Auth::id())->where('SKU1_current_inventory', 0)->where('product_status', '!=', 3)->orderBy('id', 'asc')->get();
+		// dd($mercari_updates_limit);
+		// return view('components.etc_function', ['mercari_updates_limit' => $mercari_updates_limit]);
+
+		// ==========================  change  4-4  =====================================================
+		$mercari_updates_limit = [];
+		$mercari_update = MercariUpdate::select('id', 'SKU1_product_management_code', 'last_modified', 'product_name', 'Selling_price', 'product_status')->where('user_id', '=', Auth::id())->where('product_status', '!=', 3)->orderBy('id', 'asc')->get();
+		foreach ($mercari_update as $mu) {
+			$amazon_info = AmazonProduct::where('user_id', Auth::id())->where('m_code', '=', $mu['SKU1_product_management_code'])->first();
+			if (isset($amazon_info)) {
+				if ($amazon_info['inventory'] == 0) {
+					array_push($mercari_updates_limit, [$mu['id'], explode(';', $amazon_info['image'])[0], $mu['SKU1_product_management_code'], $mu['product_name'], $mu['Selling_price'], $mu['product_status'], $mu['last_modified']]);
+				}
+			}
+		}
 		return view('components.etc_function', ['mercari_updates_limit' => $mercari_updates_limit]);
 	}
 }

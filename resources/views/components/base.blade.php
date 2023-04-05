@@ -81,7 +81,6 @@
                             <tr id="tr_{{$p->id}}">
                                 @php
                                 $image = explode(';',$p->image);
-
                                 @endphp
                                 <td><a data-bs-toggle="tooltip" title="Keepa" href="{{ 'https://keepa.com/#!product/5-' . $p->ASIN }}" target="_blank">
                                         <div style="width:4rem;height:4rem;background-color:white;text-align:center">
@@ -99,7 +98,7 @@
                                 <td style="text-align: right;">
 
                                     @if($p->price == 0)
-                                    取得中
+                                    <span data-bs-toggle="tooltip" style="text-align: right;" class="badge bg-light-warning">取得中</span>
                                     @else
                                     <span data-bs-toggle="tooltip" title="登録価格" id="qqq" class="badge bg-light-secondary">¥{{number_format($p->r_price)}}</span>
                                     @if($p->r_price < $p->price)
@@ -278,7 +277,88 @@
         });
     }
 
-    function amazon_send(update_num, parameter, condition, finish) {
+    // function amazon_send(update_num, parameter, condition, finish) {
+    //     let postData = {
+    //         user_id: '{{ Auth::id() }}',
+    //         xlRowObjArr: parameter
+    //     };
+    //     $.ajax({
+    //         url: "http://localhost:32768/api/v1/amazon/saveAmazon",
+    //         // url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveAmazon",
+    //         type: 'post',
+    //         data: {
+    //             xlsxData: JSON.stringify(postData)
+    //         },
+    //         success: function(res) {
+    //             // if (res != "success") {
+    //             //     if (finish == 'end') {
+    //             //         Toastify({
+    //             //             text: update_num + "から" + xlRowObjArr.length + "番までのデータ登録に失敗しました。",
+    //             //             duration: 2000,
+    //             //             close: true,
+    //             //             gravity: "top",
+    //             //             position: "right",
+    //             //             backgroundColor: "#4fbe87",
+    //             //         }).showToast();
+    //             //     } else {
+    //             //         Toastify({
+    //             //             text: update_num + "から" + update_num + 1000 + "番までのデータ登録に失敗しました。",
+    //             //             duration: 2000,
+    //             //             close: true,
+    //             //             gravity: "top",
+    //             //             position: "right",
+    //             //             backgroundColor: "#4fbe87",
+    //             //         }).showToast();
+    //             //     }
+    //             // }
+    //             if (finish == 'end') {
+    //                 Toastify({
+    //                     text: "データが正常に保存されました。",
+    //                     duration: 2000,
+    //                     close: true,
+    //                     gravity: "top",
+    //                     position: "right",
+    //                     backgroundColor: "#4fbe87",
+    //                 }).showToast();
+    //                 setTimeout(refresh_page, 3000);
+    //             }
+
+    //             // let asins = [];
+    //             // for (const r of postData.xlRowObjArr) {
+    //             //     if (r.ASIN) {
+    //             //         asins.push(r.ASIN);
+    //             //     }
+    //             // }
+    //             // let priceData = {
+    //             //     user_id: '{{ Auth::user()->id }}',
+    //             //     codes: asins
+    //             // };
+    //             // $.ajax({
+    //             //     // url: "http://localhost:32768/api/v1/amazon/getInfo",
+    //             //     url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/getInfo",
+    //             //     type: "post",
+    //             //     data: {
+    //             //         asin: JSON.stringify(priceData)
+    //             //     },
+    //             //     success: function() {
+    //             //         if(finish == "end"){
+    //             //             Toastify({
+    //             //                 text: "データが正常に保存されました。",
+    //             //                 duration: 2000,
+    //             //                 close: true,
+    //             //                 gravity: "top",
+    //             //                 position: "right",
+    //             //                 backgroundColor: "#4fbe87",
+    //             //             }).showToast();
+    //             //         }
+    //             //     },
+    //             // });
+    //         }
+    //     });
+    //     return 'success';
+    // }
+
+    function amazon_send(condition, parameter, finish) {
         let postData = {
             condition: condition,
             xlRowObjArr: parameter
@@ -293,27 +373,6 @@
                 xlsxData: JSON.stringify(postData)
             },
             success: function(res) {
-                if (res != "success") {
-                    if (finish == 'end') {
-                        Toastify({
-                            text: update_num + "から" + xlRowObjArr.length + "番までのデータ登録に失敗しました。",
-                            duration: 2000,
-                            close: true,
-                            gravity: "top",
-                            position: "right",
-                            backgroundColor: "#4fbe87",
-                        }).showToast();
-                    } else {
-                        Toastify({
-                            text: update_num + "から" + update_num + 1000 + "番までのデータ登録に失敗しました。",
-                            duration: 2000,
-                            close: true,
-                            gravity: "top",
-                            position: "right",
-                            backgroundColor: "#4fbe87",
-                        }).showToast();
-                    }
-                }
                 if (finish == 'end') {
                     Toastify({
                         text: "データが正常に保存されました。",
@@ -323,9 +382,10 @@
                         position: "right",
                         backgroundColor: "#4fbe87",
                     }).showToast();
-                    setTimeout(refresh_page, 3000);
+                    setTimeout(() => {
+                        location.href = "{{ route('base_data') }}";
+                    }, 4000);
                 }
-
                 // let asins = [];
                 // for (const r of postData.xlRowObjArr) {
                 //     if (r.ASIN) {
@@ -344,16 +404,14 @@
                 //         asin: JSON.stringify(priceData)
                 //     },
                 //     success: function() {
-                //         if(finish == "end"){
-                //             Toastify({
-                //                 text: "データが正常に保存されました。",
-                //                 duration: 2000,
-                //                 close: true,
-                //                 gravity: "top",
-                //                 position: "right",
-                //                 backgroundColor: "#4fbe87",
-                //             }).showToast();
-                //         }
+                //         Toastify({
+                //             text: "データが正常に保存されました。",
+                //             duration: 2000,
+                //             close: true,
+                //             gravity: "top",
+                //             position: "right",
+                //             backgroundColor: "#4fbe87",
+                //         }).showToast();
                 //     },
                 // });
             }

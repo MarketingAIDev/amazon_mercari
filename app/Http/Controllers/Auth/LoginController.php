@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use function PHPUnit\Framework\exactly;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -41,7 +42,8 @@ class LoginController extends Controller
     {
         // $this->middleware('guest', ['except' => 'logout']);
     }
-    public function loginview(){
+    public function loginview()
+    {
         echo "FFF";
     }
     public function login(Request $request)
@@ -59,11 +61,26 @@ class LoginController extends Controller
             ]
         );
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        $user = User::where('email', $request["email"])->first();
+        // return response()->json($request["email"]);
 
-            //return redirect()->intended('dashboard');
-            return redirect()->route('welcome');
+        if (!isset($user)) {
+            return back()->withErrors([
+                'message' => 'メールアドレスまたはパスワードが間違っています。',
+            ]);
+        }
+
+        if (isset($user) && $user->is_permitted == 0) {
+            return back()->withErrors([
+                'message' => '管理者からのご連絡をお待ちください',
+            ]);
+        }
+
+        if (isset($user) && $user->is_permitted == 1) {
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                return redirect()->route('welcome');
+            }
         }
 
         return back()->withErrors([
@@ -76,7 +93,7 @@ class LoginController extends Controller
      *
      * @return void
      */
-    
+
     public function logout()
     {
         $user = Auth::user();

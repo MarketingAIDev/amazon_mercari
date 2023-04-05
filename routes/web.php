@@ -6,12 +6,13 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\MypageController;
 use App\Http\Controllers\DataController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\ProductController;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 // Homepage Route
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::post('/sendSectenceAction', [MypageController::class, 'sendSectenceAction'])->name('sendSectenceAction');
 
 // Authentication Routes
 Route::get('/signup/{role?}', [RegisterController::class, 'index']);
@@ -21,12 +22,12 @@ Route::get('/loginview', [LoginController::class, 'loginview']);
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Plan Routes
-Route::prefix('plan')->group(function ()
-{
+Route::prefix('plan')->group(function () {
     Route::get('select', [PlanController::class, 'show'])->name('show_plan');
     Route::get('select/{id}', [PlanController::class, 'select'])->name('select_plan');
     Route::get('show', [PlanController::class, 'page'])->name('plan_page');
 });
+
 
 // Main Routes
 Route::group(['middleware' => ['admin']], function () {

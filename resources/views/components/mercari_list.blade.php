@@ -145,6 +145,9 @@
 <script src="assets/extensions/filepond/filepond.js"></script>
 <script src="assets/extensions/toastify-js/src/toastify.js"></script>
 <script src="assets/js/pages/filepond.js"></script>
+<!-- <script src="js/jszip.js"></script>
+<script src="js/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script> -->
 <script>
     var all_exhibition_data = <?php echo $exhibition_data; ?>;
     var rangeHtml = '';
@@ -212,21 +215,6 @@
             }
         });
     });
-    // $('#download_image_zip').on('click', function() {
-    //     $.ajax({
-    //         url: "http://localhost:32768/api/v1/amazon/downloadImageZip",
-    //         // url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/downloadImageZip",
-    //         type: "post",
-    //         data: {
-    //             family_name: '{{Auth::user()->family_name}}'
-    //         },
-    //         beforeSend: function(data) {
-    //             // console.log('{{Auth::user()->id}}');
-    //         },
-    //         success: function(res) {
-    //         }
-    //     });
-    // });
     $('#export_entry_data').on('click', function() {
         $.ajax({
             url: "{{route('export_mercari')}}",
@@ -239,6 +227,40 @@
             success: function(res) {}
         });
     });
+
+    // ===============================================  download images ==================================
+
+    // async function generateZIP() {
+    //     var zip = new JSZip();
+    //     var count = 0;
+    //     var zipFilename = "images_bundle.zip";
+    //     // we will download these images in zip file
+    //     var images = [
+    //         "https://upload.wikimedia.org/wikipedia/commons/9/91/JavaScript_screenshot.png",
+    //         "https://images.milanuncios.com/api/v1/ma-ad-media-pro/images/296b1d59-04bf-46e4-a449-6815a222dbf5?rule=hw545",
+    //         "https://lets-code-more.s3.amazonaws.com/static/assets/imgs/theme/COMPUTER.jpg",
+    //         "https://lets-code-more.s3.amazonaws.com/media/blog_images/javascript.jpg"
+    //     ]
+    //     images.forEach(async function(imgURL, i) {
+    //         console.log(i)
+    //         var filename = "image" + i + '.jpg'
+    //         var image = await fetch(imgURL)
+    //         var imageBlog = await image.blob()
+    //         var img = zip.folder("images");
+    //         // loading a file and add it in a zip file
+    //         img.file(filename, imageBlog, {
+    //             binary: true
+    //         });
+    //         count++
+    //         if (count == images.length) {
+    //             zip.generateAsync({
+    //                 type: 'blob'
+    //             }).then(function(content) {
+    //                 saveAs(content, zipFilename);
+    //             });
+    //         }
+    //     })
+    // }
 </script>
 <!-- end -->
 @endpush

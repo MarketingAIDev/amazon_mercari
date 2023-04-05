@@ -2,10 +2,6 @@
 @extends("layouts.sidebar")
 <!-- start additional css  -->
 @section('additional_CSS')
-<link rel="stylesheet" href="assets/extensions/filepond/filepond.css">
-<link rel="stylesheet" href="assets/extensions/filepond-plugin-image-preview/filepond-plugin-image-preview.css">
-<link rel="stylesheet" href="assets/extensions/toastify-js/src/toastify.css">
-<link rel="stylesheet" href="assets/css/pages/filepond.css">
 <style>
 </style>
 @endsection
@@ -52,7 +48,9 @@
                                     <span data-bs-toggle="tooltip" title="出品価格" class="badge bg-light-success">¥{{number_format($m->selling_price)}}</span>
                                 </td>
                                 <td data-bs-toggle="tooltip">{{ $m->category_id }}</td>
-                                <td><?php echo ($m->region_origin == 'jp12') ? '千葉県' : '' ?></td>
+                                <td>
+                                    <span data-bs-toggle="tooltip" style="text-align: right;" class="badge bg-light-warning"><?php echo ($m->region_origin == 'jp12') ? '千葉県' : '' ?></span>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -70,9 +68,6 @@
 <!-- start additional scripts -->
 @push('scripts')
 <!-- start file js -->
-<script src="assets/extensions/filepond/filepond.js"></script>
-<script src="assets/extensions/toastify-js/src/toastify.js"></script>
-<script src="assets/js/pages/filepond.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))

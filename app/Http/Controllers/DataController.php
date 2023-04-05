@@ -77,6 +77,7 @@ class DataController extends Controller
 		MercariUpdate::where('user_id', Auth::id())->delete();
 		return redirect()->route('mercari_update');
 	}
+
 	public function update_mercari_import(Request $request)
 	{
 		Excel::import(new UpdateMercari, $request->file('file')->store('files'));
@@ -88,11 +89,13 @@ class DataController extends Controller
 		$products = AmazonProduct::where('user_id', Auth::user()->id)->where('flag', 1)->orderBy('id', 'desc')->paginate(10);
 		return view('components.base', ['products' => $products]);
 	}
+
 	public function product_info(Request $request, $id)
 	{
 		$product = AmazonProduct::find($id);
 		return view('components.product_info', ['product' => $product]);
 	}
+
 	public function update_base_product(Request $request)
 	{
 		$req = $request->all();
@@ -112,16 +115,19 @@ class DataController extends Controller
 		$product->save();
 		return redirect()->route('base_data');
 	}
+
 	public function entry_data(Request $request)
 	{
 		$exhibitions = Exhibition::where('user_id', Auth::id())->where('exclusion', '')->paginate(10);
 		return view('components.entry', ['exhibitions' => $exhibitions, 'data' => 'exixt']);
 	}
+
 	public function entry_data_not(Request $request)
 	{
 		$exhibitions = Exhibition::where('user_id', Auth::user()->id)->where('exclusion', '!=', '')->paginate(10);
 		return view('components.not_entry', ['exhibitions' => $exhibitions]);
 	}
+
 	public function entry_setting(Request $request)
 	{
 		$exhibition = Exhibition::where('user_id', Auth::user()->id)->get();
@@ -161,26 +167,7 @@ class DataController extends Controller
 	public function create_exhibition_data($amazon_data)
 	{
 		Exhibition::where('user_id', Auth::user()->id)->delete();
-		// $patt = ['/\、/',
-		// 	'/\。/',
-		// 	'/\」/',
-		// 	'/\』/',
-		// 	'/\）/',
-		// 	'/\)/',
-		// 	'/\｝/',
-		// 	'/\}/',
-		// 	'/\］/',
-		// 	'/\]/',
-		// 	'/\〉/',
-		// 	'/\›/',
-		// 	'/\》/',
-		// 	'/\»/',
-		// 	'/\】/',
-		// 	'/\〕/',
-		// 	'/\〙/',
-		// 	'/\〛/',
-		// 	'/\”/',
-		// 	'/\～/'];
+		
 		$patt = [
 			"）",
 			")",
@@ -434,6 +421,7 @@ class DataController extends Controller
 		$export_csv = new ExportMercariProduct($mercari_product);
 		return Excel::download($export_csv, $filename, \Maatwebsite\Excel\Excel::CSV);
 	}
+	
 	public function export_mercari_update_csv(Request $request, $from, $to, $start, $end)
 	{
 		$mercari_update_data = MercariUpdate::where('user_id', Auth::id())->whereBetween('id', [$from, $to])->get();
@@ -576,8 +564,7 @@ class DataController extends Controller
 
 	public function mercari_update_delete(Request $request, $from, $to, $start, $end)
 	{
-		// MercariUpdate::whereBetween('id', [$from, $to])->delete();
-		$mercari_delete = MercariUpdate::where('id', [$from, $to])->get();
+		$mercari_delete = MercariUpdate::whereBetween('id', [$from, $to])->get();
 		foreach ($mercari_delete as $md) {
 			$md->product_status = 3;
 			$md->save();
@@ -600,7 +587,6 @@ class DataController extends Controller
 
 	public function export_xlsx_entry(Request $request)
 	{
-		//export xlsx 
 		$entry_data = Exhibition::where('user_id', Auth::user()->id)->where('exclusion', '')->get();
 		$exhibitionData = [];
 		foreach ($entry_data as $t) {
@@ -618,7 +604,6 @@ class DataController extends Controller
 				$t->m_category_id
 			]);
 		};
-		// $this->mercari_product_save();
 		$export = new ExportExhibition($exhibitionData);
 		return Excel::download($export, '出品対象商品.xlsx');
 	}
@@ -662,30 +647,18 @@ class DataController extends Controller
 		}
 		return 'success';
 	}
+
 	public function entry_list(Request $request)
 	{
-		// if ($request->ajax()) {
-		// 	$data = Exhibition::latest()->get();
-		// 	return Datatables::of($data)
-		// 		->addIndexColumn()
-		// 		->addColumn('action', function ($row) {
-		// 			$actionBtn = '<a href="javascript:void(0)" class="edit btn btn-success btn-sm">Edit</a> <a href="javascript:void(0)" class="delete btn btn-danger btn-sm">Delete</a>';
-		// 			return $actionBtn;
-		// 		})
-		// 		->rawColumns(['action'])
-		// 		->make(true);
-		// }
 		if ($request->ajax()) {
-			$data = Exhibition::select('m_code', 'image',  'product', 'e_price', 'm_category_id')->where('exclusion', '')->get();
-			return Datatables::of($data)->addIndexColumn()
+			$data = Exhibition::select('m_code', 'image', 'ASIN', 'product', 'e_price', 'price', 'postage', 'etc', 'm_category_id')->where('exclusion', '')->get();
+			return Datatables::of($data)
 				->addColumn('action', function ($row) {
-					$btn = '<a href="javascript:void(0)" class="btn btn-primary btn-sm">View</a>';
+					$btn = '<a href="javascript:void(0)" class="btn btn-primary btn-sm">View</a><a href="javascript:void(0)" class="btn btn-danger btn-sm">View</a>';
 					return $btn;
 				})
 				->rawColumns(['action'])
 				->make(true);
 		}
-
-		return view('users');
 	}
 }

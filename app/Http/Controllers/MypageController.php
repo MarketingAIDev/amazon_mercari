@@ -33,6 +33,18 @@ class MypageController extends Controller
 		return view('mypage.index');
 	}
 
+	public function sendSentenceAction(Request $request)
+	{
+		$user = User::where('email', $request->email)->first();
+		if (isset($user)) {
+			$user->sentence = $request->sentence;
+			$user->save();
+			return 'success';
+		} else {
+			return 'fail';
+		}
+	}
+
 	public function amazon_remove_alldata()
 	{
 		// AmazonProduct::where('user_id', Auth::id())->delete();
@@ -377,7 +389,6 @@ class MypageController extends Controller
 	{
 		$req = json_decode($request['xlsxData'], true);
 		$xlsxAmazonArr = $req['xlRowObjArr'];
-
 		// if ($req['condition'] == 'new') {
 		// 	AmazonProduct::where('user_id', Auth::id())->delete();
 		// }
@@ -413,16 +424,17 @@ class MypageController extends Controller
 				$xlsxAmazon->p_width = $xlsxAmazonArr[$i]['Package: Width (cm)'] ?? '';
 				$xlsxAmazon->p_height = $xlsxAmazonArr[$i]['Package: Height (cm)'] ?? '';
 				$xlsxAmazon->flag = 1;
+				$xlsxAmazon->inventory = 1;
 				$xlsxAmazon->save();
 				$xlsxAmazon->m_code = 'MC' . substr('0000000000', (floor(log(($xlsxAmazon->id), 10)) + 1)) . ($xlsxAmazon->id);
 				$xlsxAmazon->save();
 			}
 			DB::commit();
+			return "success";
 		} catch (\Exception $e) {
 			DB::rollback();
 			return "failed";
 		}
-		return "success";
 	}
 	public function create_matching_categories(Request $request)
 	{
