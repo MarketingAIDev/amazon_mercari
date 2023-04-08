@@ -127,73 +127,87 @@
 
         var progress_index = 1;
         const progress_func = setInterval(() => {
-            if (progress_index < 95) {
+            if (progress_index < 100) {
                 $('#progress').val(progress_index);
                 progress_index++;
             } else {
                 clearInterval(progress_func);
                 progress_index = 1;
             }
-        }, 1000 * 2);
+        }, 1000 * 1);
 
         $.ajax({
             url: "http://localhost:32768/api/v1/amazon/saveMercari",
-            // url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveMercari",
+            //url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/saveMercari",
             type: "post",
             data: {
                 user_id: '{{ Auth::id() }}',
             },
             success: function(res) {
-                //exhibition data saved mercariProduct.And start image download!
-                // $.ajax({
-                //     url: "http://localhost:32768/api/v1/amazon/downloadImages",
-                //     //url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/downloadImages",
-                //     type: "post",
-                //     data: {
-                //         user_id: '{{Auth::user()->id}}'
-                //     },
-                //     beforeSend: function(data) {
-                //         console.log(data);
-                //     },
-                //     success: function(res) {
-                //         console.log(res);
-                //     }
-                // });
                 console.log(res);
                 setTimeout(() => {
                     $('#progress').val(100);
                     location.href = '{{ route("entry_data") }}';
                 }, 1000 * 100);
-
-                // if ($('#progress').val() == 99) {
-                //     Toastify({
-                //         text: "データが正常に保存されました。",
-                //         duration: 2000,
-                //         close: true,
-                //         gravity: "top",
-                //         position: "right",
-                //         backgroundColor: "#4fbe87",
-                //     }).showToast();
-                // }
+                if ($('#progress').val() == 99) {
+                    Toastify({
+                        text: "データが正常に保存されました。",
+                        duration: 2000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4fbe87",
+                    }).showToast();
+                }
             },
         });
+        // $.ajax({
+        //     url: "http://localhost:32768/api/v1/amazon/downloadImages",
+        //     //url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/downloadImages",
+        //     type: "post",
+        //     data: {
+        //         user_id: '{{Auth::user()->id}}'
+        //     },
+        //     beforeSend: function(data) {
+        //         console.log(data);
+        //     },
+        //     success: function(res) {
+        //         console.log(res);
+        //         Toastify({
+        //             text: "お待ちください。",
+        //             duration: 2500,
+        //             close: true,
+        //             gravity: "top",
+        //             position: "right",
+        //             backgroundColor: "#4fbe87",
+        //         }).showToast();
+        //     }
+        // });
     });
 
     $(document).ready(function() {
         $('.datatable').DataTable().ajax.reload();
     });
 
+    const delete_data = function (id) {
+        console.log(id);
+        return;
+    };
+
     var datatable = $('.datatable').DataTable({
-        columnDefs: [{
-            targets: 3,
-            className: 'dt-body-right'
-        }],
+        columnDefs: [
+            {
+                targets: 3,
+                className: 'dt-body-right'
+            }
+        ],
         processing: true,
         serverSide: true,
         autoConfig: true,
         pageLength: 10,
         ajax: "{{ route('entry.list') }}",
-        columns: [{
+        columns: [
+            {
                 data: 'm_code',
                 name: 'm_code'
             },
@@ -230,20 +244,20 @@
             {
                 data: 'ASIN',
                 name: 'keepaURL',
-                render: function(data) {
+                render: function (data) {
                     return (
-                        `<a href="https://keepa.com/#!product/5-` + data + `" target="_blank"><img style="width: 200px;" title="https://keepa.com/#!product/5-` + data + `" src="https://graph.keepa.com/pricehistory.png?asin=` + data + `&domain=co.jp&salesrank=1" /></a>`
+                        `<a href="https://keepa.com/#!product/5-` + data + `" target="_blank"><img style="width: 200px;" title="https://keepa.com/#!product/5-` + data + `" src="https://graph.keepa.com/pricehistory.png?asin=` + data +  `&domain=co.jp&salesrank=1" /></a>`
                     )
                 }
             },
             {
                 data: 'id',
-                name: 'id',
+                name: 'action',
                 orderable: false,
                 searchable: false,
-                render: function(data) {
+                render: function (data) {
                     return (
-                        `<a class="btn btn-round btn-danger btn-sm" style="cursor:pointer" onclick="return window.confirm('データを本当に削除しますか？');" href="/delete_entry_data/` + data + `"><i class="bi bi-trash"></i></a>`
+                        `<btn class="btn btn-round btn-danger btn-sm" style="cursor:pointer" onclick="delete_data(` + data + `)"><i class="bi bi-trash"></i></btn>`
                     )
                 }
             },

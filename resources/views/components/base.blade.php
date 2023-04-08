@@ -147,7 +147,8 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     }, false);
-
+    var update_num = 0;
+    var xlRowObjArr = [];
     // xlsx reader
     const xlReader = function(e) {
         var file = e.target.files[0];
@@ -157,13 +158,14 @@
             alert("xlsx ファイルを選択してください。");
             return false;
         }
+
         reader.onload = function(e) {
             var data = e.target.result;
             var workbook = XLSX.read(data, {
                 type: 'binary'
             });
 
-            var xlRowObjArr = [];
+            
             var asins = [];
 
             workbook.SheetNames.forEach(function(sheetName) {
@@ -183,6 +185,7 @@
                 alert('選択した xlsx ファイル形式が正しくありません。');
                 xlRowObjArr = [];
             } else {
+
                 $('#update_csv').on('click', function() {
                     Toastify({
                         text: "データを保存するのに少し時間が必要です。",
@@ -197,24 +200,26 @@
                         $("#loader-4").show(); //makes page more lightweight 
                     });
                     $('.progress_loader').css('display', 'block');
-
-                    var update_num = 0;
+                    
                     //dely 20S
-                    const updateInterval = setInterval(() => {
-                        if (update_num < xlRowObjArr.length) {
-                            const each_func = amazon_send(update_num, xlRowObjArr.slice(update_num, (update_num + 1000)), 'update', (update_num + 1000 >= xlRowObjArr.length) ? 'end' : 'start');
-                            update_num += 1000;
-                            if (each_func == 'success') {
-                                if (update_num > 0) {
-                                    var progress_len = (update_num / xlRowObjArr.length) * 100;
-                                    $('#progress').val(progress_len);
-                                }
-                            }
-                        } else {
-                            clearInterval(updateInterval);
-                            update_num = 0;
-                        }
-                    }, 20000);
+                    // const updateInterval = setInterval(() => {
+                    //     if (update_num < xlRowObjArr.length) {
+                    //         const each_func = amazon_send('update', xlRowObjArr.slice(update_num, (update_num + 1000)), (update_num + 1000 >= xlRowObjArr.length) ? 'end' : 'start');
+                    //         update_num += 1000;
+                    //         if (each_func == 'success') {
+                    //             if (update_num > 0) {
+                    //                 var progress_len = (update_num / xlRowObjArr.length) * 100;
+                    //                 $('#progress').val(progress_len);
+                    //             }
+                    //         }
+                    //     } else {
+                    //         clearInterval(updateInterval);
+                    //         update_num = 0;
+                    //     }
+                    // }, 20000);
+
+                    amazon_send('update', xlRowObjArr.slice(update_num, (update_num + 1000)), (update_num + 1000 >= xlRowObjArr.length) ? 'end' : 'start');
+                
                 });
             }
         };
@@ -276,7 +281,79 @@
             }
         });
     }
+    
+    function amazon_send(condition, parameter, finish) {
+        let postData = {
+            condition: condition,
+            xlRowObjArr: parameter
+        };
+        $.ajax({
+            url: "{{ route('create_amazon_data') }}",
+            type: 'post',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                xlsxData: JSON.stringify(postData)
+            },
+            success: function(res) {
+                if (update_num < xlRowObjArr.length) {
+                    update_num += 1000;
+                    amazon_send('update', xlRowObjArr.slice(update_num, (update_num + 1000)), (update_num + 1000 >= xlRowObjArr.length) ? 'end' : 'start');
+                    
+                    if (update_num > 0) {
+                        var progress_len = (update_num / xlRowObjArr.length) * 100;
+                        $('#progress').val(progress_len);
+                    }
 
+                }else{
+                    $('#progress').val(100);
+                    Toastify({
+                        text: "データが正常に保存されました。",
+                        duration: 2000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4fbe87",
+                    }).showToast();
+                    setTimeout(() => {
+                        location.href = "{{ route('base_data') }}";
+                    }, 4000);
+                   
+                }
+                
+                // let asins = [];
+                // for (const r of postData.xlRowObjArr) {
+                //     if (r.ASIN) {
+                //         asins.push(r.ASIN);
+                //     }
+                // }
+                // let priceData = {
+                //     user_id: '{{ Auth::user()->id }}',
+                //     codes: asins
+                // };
+                // $.ajax({
+                //     // url: "http://localhost:32768/api/v1/amazon/getInfo",
+                //     url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/getInfo",
+                //     type: "post",
+                //     data: {
+                //         asin: JSON.stringify(priceData)
+                //     },
+                //     success: function() {
+                //         Toastify({
+                //             text: "データが正常に保存されました。",
+                //             duration: 2000,
+                //             close: true,
+                //             gravity: "top",
+                //             position: "right",
+                //             backgroundColor: "#4fbe87",
+                //         }).showToast();
+                //     },
+                // });
+            }
+        });
+        return 'success';
+    }
     // function amazon_send(update_num, parameter, condition, finish) {
     //     let postData = {
     //         user_id: '{{ Auth::id() }}',
@@ -357,66 +434,5 @@
     //     });
     //     return 'success';
     // }
-
-    function amazon_send(condition, parameter, finish) {
-        let postData = {
-            condition: condition,
-            xlRowObjArr: parameter
-        };
-        $.ajax({
-            url: "{{ route('create_amazon_data') }}",
-            type: 'post',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                xlsxData: JSON.stringify(postData)
-            },
-            success: function(res) {
-                if (finish == 'end') {
-                    Toastify({
-                        text: "データが正常に保存されました。",
-                        duration: 2000,
-                        close: true,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "#4fbe87",
-                    }).showToast();
-                    setTimeout(() => {
-                        location.href = "{{ route('base_data') }}";
-                    }, 4000);
-                }
-                // let asins = [];
-                // for (const r of postData.xlRowObjArr) {
-                //     if (r.ASIN) {
-                //         asins.push(r.ASIN);
-                //     }
-                // }
-                // let priceData = {
-                //     user_id: '{{ Auth::user()->id }}',
-                //     codes: asins
-                // };
-                // $.ajax({
-                //     // url: "http://localhost:32768/api/v1/amazon/getInfo",
-                //     url: "http://xs021277.xsrv.jp/fmproxy/api/v1/amazon/getInfo",
-                //     type: "post",
-                //     data: {
-                //         asin: JSON.stringify(priceData)
-                //     },
-                //     success: function() {
-                //         Toastify({
-                //             text: "データが正常に保存されました。",
-                //             duration: 2000,
-                //             close: true,
-                //             gravity: "top",
-                //             position: "right",
-                //             backgroundColor: "#4fbe87",
-                //         }).showToast();
-                //     },
-                // });
-            }
-        });
-        return 'success';
-    }
 </script>
 @endpush

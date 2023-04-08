@@ -3,9 +3,6 @@ const { Op } = require("sequelize");
 const { products, exhibitions, mercariUpdates, users, ng_categories, ng_products, ng_words, settings, postages, prices, categories, categoryIds, mercaris } = require("../models");
 const download = require('image-downloader');
 const makeDir = require('make-dir');
-const archiver = require('archiver');
-const fs = require('fs'); // I use fs to read the directories for their contents
-const downloader = require('zip-downloader');
 
 class GetProductInfo {
 	constructor(user_info, code) {
@@ -123,7 +120,7 @@ exports.downloadImages = async (req, res) => {
 	};
 
 	let information = {};
-	information.images_path = await makeDir('../public/' + condition.user_id);
+	information.images_path = '../public/' + condition.user_id;
 
 	// download images of all available target products(1000 once)
 	await exhibitions.findAll({ where: condition }, { order: ['id', 'ASC'] })
@@ -367,25 +364,73 @@ exports.saveExhibition = async (req, res) => {
 	}
 	res.send({ msg: "success" });
 }
+
 exports.saveMercari = async (req, res) => {
 	let query_condition = { user_id: Number(req.body.user_id) };
 	await mercaris.destroy({ where: query_condition });
-
 	let exhibition_data = await exhibitions.findAll({ where: { [Op.and]: [{ exclusion: '' }, { user_id: query_condition.user_id }] } });
+	var mercari_updates = await mercariUpdates.count({ group: 'SKU1_product_management_code' }, { where: { user_id: query_condition.user_id } });
+	console.log(mercari_updates.length);
+	var img_length_condition = 1;
+	var userDir = await makeDir('../public/' + query_condition.user_id);
+	var exLen = exhibition_data.length - mercari_updates.length;
+	var dir = [];
 
-	await exhibition_data.forEach(async (row) => {
-		await mercariUpdates.findOne({ where: { SKU1_product_management_code: row.m_code } })
+	await (async () => {
+		for (let i = 0; i < Math.ceil(exLen / 1000); i++) {
+			let eachDir = await makeDir(userDir + '/' + (i + 1));
+			dir.push(eachDir);
+		}
+	})();
+
+	// ++++++++++++++++++++++for delay
+	await sleep(5000)
+	function sleep(ms) {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
+	}
+	// ++++++++++++++++++++++for delay
+
+	// const img4down = async (row) => {
+	// 	var query = {};
+	// 	var image = row.image.split(';');
+
+	// 	// for (var i = 0; i < 4; i++) {
+	// 	for (let i = 0, len = image.length; i < Math.min(4, len); i++) {
+	// 		query['image_' + (i + 1)] = row.ASIN + '_' + (i + 1) + '.jpg';
+	// 		query['img_url_' + (i + 1)] = image[i];
+	// 		var down = await download.image({
+	// 			url: image[i],
+	// 			dest: dir[Math.ceil(img_length_condition / 1000) - 1] + '/' + row.ASIN + '_' + (i + 1) + '.jpg',
+	// 		});
+	// 	}
+	// 	query.image = image[0];
+
+	// 	return query;
+	// };
+
+	for (const row of exhibition_data) {
+		mercariUpdates.findOne({ where: { SKU1_product_management_code: row.m_code } })
 			.then(async (mercari_update_data) => {
 				console.log("saveMercari>>>>", mercari_update_data);
-				if (mercari_update_data == null || mercari_update_data === undefined) {
+				if (mercari_update_data == null) {
+					console.log(img_length_condition);
 					var query = {};
+
 					var image = row.image.split(';');
-					for (var i = 0; i < 4; i++) {
-						if (image[i] != null || image[i] != undefined) {
-							query['image_' + (i + 1)] = row.ASIN + '_' + (i + 1) + '.jpg';
-						}
+
+					// for (var i = 0; i < 4; i++) {
+					for (let i = 0, len = image.length; i < Math.min(4, len); i++) {
+						query['image_' + (i + 1)] = row.ASIN + '_' + (i + 1) + '.jpg';
+						query['img_url_' + (i + 1)] = image[i];
+						var down = await download.image({
+							url: image[i],
+							dest: dir[Math.ceil(img_length_condition / 1000) - 1] + '/' + row.ASIN + '_' + (i + 1) + '.jpg',
+						});
 					}
 					query.image = image[0];
+
 					query.user_id = row.user_id;
 					query.SKU1_management = row.m_code;
 					query.SKU1_inventory = 1;
@@ -399,7 +444,9 @@ exports.saveMercari = async (req, res) => {
 					query.region_origin = 'jp12';
 					query.day_ship = 3;
 					query.product_status = 1;
-					await mercaris.create(query);
+					img_length_condition++;
+					mercaris.create(query);
+
 				} else {
 					let mercari_update_info = {};
 					if (row.inventory == 0) {
@@ -413,76 +460,55 @@ exports.saveMercari = async (req, res) => {
 					}
 
 					await mercariUpdates.update(mercari_update_info, { where: { SKU1_product_management_code: row.m_code } });
+
 				}
-			})
-
-		// dragon change ======================================================================================
-		// if (row.condition_n_u == 1) {
-
-		// 	var query = {};
-		// 	var image = row.image.split(';');
-		// 	for (var i = 0; i < 4; i++) {
-		// 		if (image[i] != null || image[i] != undefined) {
-		// 			query['image_' + (i + 1)] = row.ASIN + '_' + (i + 1) + '.jpg';
-		// 		}
-		// 	}
-		// 	query.image = image[0];
-		// 	query.user_id = row.user_id;
-		// 	query.SKU1_management = row.m_code;
-		// 	query.SKU1_inventory = 1;
-		// 	query.product = row.product;
-		// 	query.feature = row.feature;
-		// 	query.ASIN = row.ASIN;
-		// 	query.selling_price = row.e_price;
-		// 	query.category_id = row.m_category_id;
-		// 	query.commodity = 1;
-		// 	query.shipping_method = 1;
-		// 	query.region_origin = 'jp12';
-		// 	query.day_ship = 3;
-		// 	query.product_status = 1;
-		// 	await mercaris.create(query);
-
-		// } else {
-
-		// 	let mercari_update_info = {};
-		// 	if (row.intentory == 0) {
-		// 		mercari_update_info.SKU1_increase = 2;
-		// 		mercari_update_info.SKU1_stock_increase = 0;
-		// 		mercari_update_info.Selling_price = 0;
-		// 	} else {
-		// 		mercari_update_info.SKU1_increase = 1;
-		// 		mercari_update_info.SKU1_stock_increase = 1;
-		// 		mercari_update_info.Selling_price = row.e_price;
-		// 	}
-		// 	await mercariUpdates.update(mercari_update_info, { where: { SKU1_product_management_code: row.m_code } });
-
-		// }
-	});
-}
-
-exports.downloadImageZip = async (req, res) => {
-	let temp = {
-		path: '../public/Mercari/' + req.body.family_name,
-		family_name: req.body.family_name,
-		download_path: '../nodejs',
+			});
 	}
-	var output = await fs.createWriteStream(temp.family_name + '.zip');
-	var archive = await archiver('zip');
+	res.send({ msg: 'success' });
+	// exhibition_data.forEach(async (row) => {
+	// 	mercariUpdates.findOne({ where: { SKU1_product_management_code: row.m_code } })
+	// 		.then(async (mercari_update_data) => {
+	// 			console.log("saveMercari>>>>", mercari_update_data);
+	// 			if (mercari_update_data == null) {
+	// 				console.log(img_length_condition);
+	// 				var query = {};
 
-	output.on('close', function () {
-		console.log(archive.pointer() + ' total bytes');
-		console.log('archiver has been finalized and the output file descriptor has closed.');
-	});
+	// 				query = await img4down(row);
 
-	archive.on('error', function (err) {
-		throw err;
-	});
+	// 				query.user_id = row.user_id;
+	// 				query.SKU1_management = row.m_code;
+	// 				query.SKU1_inventory = 1;
+	// 				query.product = row.product;
+	// 				query.feature = row.feature;
+	// 				query.ASIN = row.ASIN;
+	// 				query.selling_price = row.e_price;
+	// 				query.category_id = row.m_category_id;
+	// 				query.commodity = 1;
+	// 				query.shipping_method = 1;
+	// 				query.region_origin = 'jp12';
+	// 				query.day_ship = 3;
+	// 				query.product_status = 1;
+	// 				img_length_condition++;
+	// 				mercaris.create(query);
 
-	await archive.pipe(output);
+	// 			} else {
+	// 				let mercari_update_info = {};
+	// 				if (row.inventory == 0) {
+	// 					mercari_update_info.SKU1_increase = 2;
+	// 					mercari_update_info.SKU1_stock_increase = 0;
+	// 					mercari_update_info.Selling_price = 0;
+	// 				} else {
+	// 					mercari_update_info.SKU1_increase = 1;
+	// 					mercari_update_info.SKU1_stock_increase = 1;
+	// 					mercari_update_info.Selling_price = row.e_price;
+	// 				}
 
-	// append files from a sub-directory, putting its contents at the root of archive
-	await archive.directory(temp.path, false);
-	await archive.finalize();
+	// 				await mercariUpdates.update(mercari_update_info, { where: { SKU1_product_management_code: row.m_code } });
+
+	// 			}
+	// 		})
+	// });
+	// res.send({ msg: 'success' });
 }
 exports.saveAmazon = async (req, res) => {
 	const reqData = JSON.parse(req.body.xlsxData);

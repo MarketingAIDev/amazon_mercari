@@ -29,10 +29,9 @@
                 <h3>出品不可商品</h3>
             </div>
             <div class="col-12 col-md-8 order-md-2 order-first">
-                <!-- <a href="{{route('csv_down_entry_not')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-file-earmark-ruled"></i> csv作成</a> -->
                 <a href="{{route('entry_data')}}" class="btn btn  btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-file-earmark-font-fill"></i> 出品対象商品</a>
                 <a href="{{route('entry_data_not')}}" class="btn btn-primary block float-start float-lg-end m-2"><i class="bi bi-file-earmark-font-fill"></i> 出品不可商品</a>
-                <a href="{{route('entry_setting')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-tools"></i> 設定</a>
+                <a href="{{route('entry_setting')}}" class="btn btn-outline-primary block float-start float-lg-end m-2"><i class="bi bi-pencil"></i>出品設定</a>
             </div>
         </div>
     </div>

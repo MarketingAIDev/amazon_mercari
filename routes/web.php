@@ -52,6 +52,7 @@ Route::group(['middleware' => ['auth']], function () {
     //entry
     Route::get('entry.list', [DataController::class, 'entry_list'])->name('entry.list');
     Route::get('entry_data', [DataController::class, 'entry_data'])->name('entry_data');
+    Route::get('delete_entry_data/{id}', [DataController::class, 'delete_entry_data'])->name('delete_entry_data');
     Route::get('entry_data_not', [DataController::class, 'entry_data_not'])->name('entry_data_not');
     Route::get('entry_setting_ng', [DataController::class, 'entry_setting'])->name('entry_setting');
     Route::get('export_xlsx_entry', [DataController::class, 'export_xlsx_entry'])->name("export_xlsx_entry");

@@ -7,7 +7,10 @@ module.exports = {
 	pool: {
 		max: 5,
 		min: 0,
-		acquire: 90000,
-		idle: 10000
+		acquire: 120000,
+		idle: 120000
+	},
+	dialectOptions: {
+		connectTimeout: 90000
 	}
 };

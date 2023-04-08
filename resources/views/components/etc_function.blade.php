@@ -19,7 +19,7 @@
     <div class="page-title">
         <div class="row">
             <div class="col-12 col-md-12 m-2 order-md-1">
-                <h3>在庫切れ商品数 : <span style="color:red; font-family:verdana"><?php echo  count($mercari_updates_limit); ?>個</span></h3>
+                <h3>在庫切れ商品数 : <span style="color:red; font-family:verdana"><?php echo count($mercari_updates_limit); ?>個</span></h3>
             </div>
         </div>
     </div>

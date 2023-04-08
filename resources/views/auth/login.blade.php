@@ -17,7 +17,7 @@
 <body style="background-color: #f2f5fba8;">
   <div id="auth">
     <!-- style="overflow-x:hiddden;overflow-y:hidden;" -->
-    <div class="row h-50">
+    <div class="row h-100">
       <div class="col-lg-6 col-12 ">
         <div id="auth-left">
           <div class="auth-logo mb-3">
@@ -66,13 +66,13 @@
           </div>
         </div>
       </div>
-      <!-- <div class="col-lg-6 col-6">
-        <div class="text-center fs-4" id="auth-right">
-          <textarea name="sentence" style="position: relative;" id="sentence" class="form-control mt-2" rows="3" placeholder="sdf"></textarea>
-          <span style="position: relative;color:blue;border-style:none;" onclick="sendSentence()"><i class="bi bi-send-fill"></i></span>
+      <div class="col-lg-6 col-12">
+        <div id="auth-right">
+          <!-- <textarea name="sentence" style="position: relative;" id="sentence" class="form-control mt-2" rows="3" placeholder="sdf"></textarea>
+          <span style="position: relative;color:blue;border-style:none;" onclick="sendSentence()"><i class="bi bi-send-fill"></i></span> -->
         </div>
 
-      </div> -->
+      </div>
     </div>
   </div>
   <script src="{{asset('assets/js/bootstrap.js')}}"></script>
@@ -80,38 +80,38 @@
   <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
 
   <script>
-    function sendSentence() {
-      $.ajax({
-        url: "{{ route('sendSectenceAction') }}",
-        type: 'post',
-        data: {
-          email: $('#email').val(),
-          sentence: $('#sentence').val()
-        },
-        success: function(res) {
-          if (res == 'success') {
-            Toastify({
-              text: "設定が更新されました。",
-              duration: 2500,
-              close: true,
-              gravity: "top",
-              position: "right",
-              backgroundColor: "#4fbe87",
-            }).showToast();
-          } else {
-            Toastify({
-              text: "設定が更新されました。",
-              duration: 2500,
-              close: true,
-              gravity: "top",
-              position: "right",
-              backgroundColor: "#4fbe87",
-            }).showToast();
+    // function sendSentence() {
+    //   $.ajax({
+    //     url: "{{ route('sendSectenceAction') }}",
+    //     type: 'post',
+    //     data: {
+    //       email: $('#email').val(),
+    //       sentence: $('#sentence').val()
+    //     },
+    //     success: function(res) {
+    //       if (res == 'success') {
+    //         Toastify({
+    //           text: "設定が更新されました。",
+    //           duration: 2500,
+    //           close: true,
+    //           gravity: "top",
+    //           position: "right",
+    //           backgroundColor: "#4fbe87",
+    //         }).showToast();
+    //       } else {
+    //         Toastify({
+    //           text: "設定が更新されました。",
+    //           duration: 2500,
+    //           close: true,
+    //           gravity: "top",
+    //           position: "right",
+    //           backgroundColor: "#4fbe87",
+    //         }).showToast();
 
-          }
-        }
-      })
-    }
+    //       }
+    //     }
+    //   })
+    // }
   </script>
 </body>
 

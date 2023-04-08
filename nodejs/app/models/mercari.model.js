@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const mercariList=sequelize.define( "mercari_products", {
+  const mercariList = sequelize.define("mercari_products", {
     user_id: {
       type: Sequelize.INTEGER
     },
@@ -189,9 +189,21 @@ module.exports = (sequelize, Sequelize) => {
     product_status: {
       type: Sequelize.INTEGER
     },
+    img_url_1: {
+      type: Sequelize.STRING
+    },
+    img_url_2: {
+      type: Sequelize.STRING
+    },
+    img_url_3: {
+      type: Sequelize.STRING
+    },
+    img_url_4: {
+      type: Sequelize.STRING
+    },
   },
     {
       timestamps: false
-    } );
-    return mercariList;
-  };
+    });
+  return mercariList;
+};

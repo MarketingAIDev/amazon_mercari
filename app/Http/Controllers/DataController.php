@@ -32,20 +32,53 @@ use ZipArchive;
 
 class DataController extends Controller
 {
+	// public function downloadIMG(Request $request, $from, $to, $start, $end)
+	// {
+	// 	$zip = new ZipArchive;
+	// 	$path = public_path() . "/" . Auth::user()->family_name . "(" . $start . '-' . $end . ")/"; //dir_path
+
+	// 	//$exhibition_data = MercariProduct::select('id')->where('user_id', '=', Auth::id())->orderBy('id', 'asc')->offset(0)->limit(10)->->get();
+
+	// 	// 		$content = file_get_contents("http://www.google.co.in/intl/en_com/images/srpr/logo1w.png");
+	// 	// //Store in the filesystem.
+	// 	// $fp = fopen("/location/to/save/image.png", "w");
+	// 	// fwrite($fp, $content);
+	// 	// fclose($fp);
+
+	// 	// $fileName = Auth::user()->family_name . '.zip';
+	// 	$fileName = Auth::user()->family_name . "(" . $start . '-' . $end . ")" . '.zip';
+
+	// 	$downloadImgName = 'MERCARI' . $start . '-' . $end . '.zip';
+
+	// 	if (!File::exists($path)) {
+	// 		$mercari_products = MercariProduct::where('user_id', Auth::user()->id)->paginate(10);
+	// 		return redirect()->route('mercari_list');
+	// 		// return view('components.mercari_register', ['mercari_products' => $mercari_products, 'error' => 'no']);
+	// 	}
+	// 	if ($zip->open(public_path($downloadImgName), ZipArchive::CREATE) === true) {
+	// 		$files = File::files(public_path(Auth::user()->family_name . "(" . $start . '-' . $end . ")/"));
+	// 		foreach ($files as $key => $value) {
+	// 			$relativeNameInZipFile = basename($value);
+	// 			$zip->addFile($value, $relativeNameInZipFile);
+	// 		}
+
+	// 		$zip->close();
+	// 	}
+	// 	return response()->download(public_path($downloadImgName));
+	// }
+
 	public function downloadIMG(Request $request, $from, $to, $start, $end)
 	{
 		$zip = new ZipArchive;
-		$path = public_path() . "/" . Auth::user()->family_name . "(" . $start . '-' . $end . ")/";
+		$directory = public_path() . "/" . Auth::id() . '/' . ceil($start / 1000) . "/";
 		// $fileName = Auth::user()->family_name . '.zip';
-		$fileName = Auth::user()->family_name . "(" . $start . '-' . $end . ")" . '.zip';
 		$downloadImgName = 'MERCARI' . $start . '-' . $end . '.zip';
-		if (!File::exists($path)) {
-			$mercari_products = MercariProduct::where('user_id', Auth::user()->id)->paginate(10);
+		if (!File::exists($directory)) {
 			return redirect()->route('mercari_list');
 			// return view('components.mercari_register', ['mercari_products' => $mercari_products, 'error' => 'no']);
 		}
-		if ($zip->open(public_path($downloadImgName), ZipArchive::CREATE) === true) {
-			$files = File::files(public_path(Auth::user()->family_name . "(" . $start . '-' . $end . ")/"));
+		if ($zip->open(public_path(Auth::id() . '/' . $downloadImgName), ZipArchive::CREATE) === true) {
+			$files = File::files(public_path(Auth::id() . '/' . ceil($start / 1000) . "/"));
 			foreach ($files as $key => $value) {
 				$relativeNameInZipFile = basename($value);
 				$zip->addFile($value, $relativeNameInZipFile);
@@ -53,7 +86,7 @@ class DataController extends Controller
 
 			$zip->close();
 		}
-		return response()->download(public_path($downloadImgName));
+		return response()->download(public_path(Auth::id() . '/' . $downloadImgName));
 	}
 
 	public function mercari_list()
@@ -62,7 +95,14 @@ class DataController extends Controller
 		if (count($exhibition_data) != 0) {
 			return view('components.mercari_list', ['exhibition_data' => $exhibition_data]);
 		} else {
-			return redirect()->route('entry_data');
+?>
+
+			<script>
+				alert("未出品商品リストに商品がありません。出品データの管理から出品商品登録ボタンをクリックしてください。");
+				location.href = './entry_data';
+			</script>
+
+<?php
 		}
 	}
 
@@ -167,7 +207,7 @@ class DataController extends Controller
 	public function create_exhibition_data($amazon_data)
 	{
 		Exhibition::where('user_id', Auth::user()->id)->delete();
-		
+
 		$patt = [
 			"）",
 			")",
@@ -421,7 +461,7 @@ class DataController extends Controller
 		$export_csv = new ExportMercariProduct($mercari_product);
 		return Excel::download($export_csv, $filename, \Maatwebsite\Excel\Excel::CSV);
 	}
-	
+
 	public function export_mercari_update_csv(Request $request, $from, $to, $start, $end)
 	{
 		$mercari_update_data = MercariUpdate::where('user_id', Auth::id())->whereBetween('id', [$from, $to])->get();
@@ -651,14 +691,14 @@ class DataController extends Controller
 	public function entry_list(Request $request)
 	{
 		if ($request->ajax()) {
-			$data = Exhibition::select('m_code', 'image', 'ASIN', 'product', 'e_price', 'price', 'postage', 'etc', 'm_category_id')->where('exclusion', '')->get();
-			return Datatables::of($data)
-				->addColumn('action', function ($row) {
-					$btn = '<a href="javascript:void(0)" class="btn btn-primary btn-sm">View</a><a href="javascript:void(0)" class="btn btn-danger btn-sm">View</a>';
-					return $btn;
-				})
-				->rawColumns(['action'])
-				->make(true);
+			$data = Exhibition::select('id', 'm_code', 'image', 'ASIN', 'product', 'e_price', 'price', 'postage', 'etc', 'm_category_id')->where('exclusion', '')->get();
+			return Datatables::of($data)->make(true);
 		}
+	}
+
+	public function delete_entry_data(Request $request, $id)
+	{
+		Exhibition::find($id)->delete();
+		return redirect()->route('entry_data');
 	}
 }
