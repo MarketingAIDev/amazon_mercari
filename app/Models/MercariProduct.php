@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class MercariProduct extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'id',
+        'user_id',
+        'ASIN',
+        'image_1',
+        'image_2',
+        'image_3',
+        'image_4',
+        'image_5',
+        'image_6',
+        'image_7',
+        'image_8',
+        'image_9',
+        'image_10',
+        'product',
+        'feature',
+        'SKU1_type',
+        'SKU2_type',
+        'SKU3_type',
+        'SKU4_type',
+        'SKU5_type',
+        'SKU6_type',
+        'SKU7_type',
+        'SKU8_type',
+        'SKU9_type',
+        'SKU10_type',
+        'SKU1_inventory',
+        'SKU2_inventory',
+        'SKU3_inventory',
+        'SKU4_inventory',
+        'SKU5_inventory',
+        'SKU6_inventory',
+        'SKU7_inventory',
+        'SKU8_inventory',
+        'SKU9_inventory',
+        'SKU10_inventory',
+        'SKU1_management',
+        'SKU2_management',
+        'SKU3_management',
+        'SKU4_management',
+        'SKU5_management',
+        'SKU6_management',
+        'SKU7_management',
+        'SKU8_management',
+        'SKU9_management',
+        'SKU10_management',
+        'SKU1_jan_code',
+        'SKU2_jan_code',
+        'SKU3_jan_code',
+        'SKU4_jan_code',
+        'SKU5_jan_code',
+        'SKU6_jan_code',
+        'SKU7_jan_code',
+        'SKU8_jan_code',
+        'SKU9_jan_code',
+        'SKU10_jan_code',
+        'brand_id',
+        'selling_price',
+        'category_id',
+        'commodity',
+        'shipping_method',
+        'region_origin',
+        'day_ship',
+        'product_status',
+    ];
+}
